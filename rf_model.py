@@ -15,6 +15,7 @@ from dataclasses import dataclass
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+from sklearn.model_selection import TimeSeriesSplit
 
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import (
@@ -29,6 +30,11 @@ from sklearn.metrics import (
 # -----------------------------
 # SETTINGS (edit here if needed)
 # -----------------------------
+
+# Cross-validation settings (time-series)
+CV_SPLITS = 5
+CV_SAMPLE_TRAIN_ROWS = 800_000   # keep CV manageable; set None to use full train
+
 CSV_FILE = "transaction_data.csv"
 OUTPUT_DIR = "outputs_rf"
 TRAIN_FRAC = 0.80
@@ -124,6 +130,42 @@ def pick_threshold_for_f1(y_true, y_prob):
     f1s = (2 * p[:-1] * r[:-1]) / np.maximum(p[:-1] + r[:-1], 1e-12)
     return thr[int(np.argmax(f1s))]
 
+def time_series_cv_auprc_rf(train_df, n_splits=5, sample_rows=800_000):
+    """
+    TimeSeriesSplit CV on the TRAIN portion only.
+    Returns: (scores_list, mean, std)
+    """
+    if sample_rows is not None and len(train_df) > sample_rows:
+        # Keep earliest rows (time-consistent)
+        train_df = train_df.iloc[:sample_rows].copy()
+
+    X = train_df.drop(columns=["isfraud"])
+    y = train_df["isfraud"].astype(int).values
+
+    tscv = TimeSeriesSplit(n_splits=n_splits)
+    scores = []
+
+    for fold, (tr_idx, va_idx) in enumerate(tscv.split(X), start=1):
+        X_tr, X_va = X.iloc[tr_idx], X.iloc[va_idx]
+        y_tr, y_va = y[tr_idx], y[va_idx]
+
+        model = RandomForestClassifier(
+            n_estimators=N_TREES,
+            class_weight="balanced_subsample",
+            random_state=RANDOM_STATE,
+            n_jobs=-1,
+            max_features="sqrt",
+        )
+        model.fit(X_tr, y_tr)
+        y_prob = model.predict_proba(X_va)[:, 1]
+
+        auprc = average_precision_score(y_va, y_prob)
+        scores.append(float(auprc))
+
+        print(f"CV fold {fold}/{n_splits} AUPRC: {auprc:.6f}")
+
+    scores = np.array(scores, dtype=float)
+    return scores.tolist(), float(scores.mean()), float(scores.std())
 
 # -----------------------------
 # Main execution
@@ -139,6 +181,14 @@ def main():
     df = add_features(df_raw)
 
     train_df, test_df = time_split(df)
+
+    print("\nRunning TimeSeriesSplit CV on training set...")
+    cv_scores, cv_mean, cv_std = time_series_cv_auprc_rf(
+    train_df,
+    n_splits=CV_SPLITS,
+    sample_rows=CV_SAMPLE_TRAIN_ROWS
+    )
+    print(f"CV AUPRC mean={cv_mean:.6f}, std={cv_std:.6f}")
 
     if DOWNSAMPLE_RATIO is not None:
         train_df = downsample_train(train_df, DOWNSAMPLE_RATIO)
@@ -175,6 +225,10 @@ def main():
 
     ensure_outdir(OUTPUT_DIR)
 
+    pd.DataFrame({"cv_fold": list(range(1, len(cv_scores)+1)), "auprc": cv_scores}).to_csv(
+    os.path.join(OUTPUT_DIR, "rf_cv_auprc.csv"), index=False
+    )
+
     # Save metrics
     pd.DataFrame([metrics.__dict__]).to_csv(
         os.path.join(OUTPUT_DIR, "rf_metrics.csv"), index=False
@@ -195,6 +249,28 @@ def main():
     importance.sort_values(ascending=False).head(20).to_csv(
         os.path.join(OUTPUT_DIR, "rf_feature_importance_top20.csv")
     )
+
+    summary_path = os.path.join(OUTPUT_DIR, "report_summary.txt")
+    with open(summary_path, "w", encoding="utf-8") as f:
+        f.write("Random Forest — Results Summary\n")
+        f.write("==============================\n\n")
+
+        f.write("Test-set metrics (threshold chosen to maximize F1 on test set):\n")
+        f.write(f"- Precision : {metrics.precision:.6f}\n")
+        f.write(f"- Recall    : {metrics.recall:.6f}\n")
+        f.write(f"- F1-score  : {metrics.f1:.6f}\n")
+        f.write(f"- AUPRC     : {metrics.auprc:.6f}\n")
+        f.write(f"- Threshold : {metrics.threshold:.6f}\n\n")
+
+        f.write("Confusion matrix (test set):\n")
+        f.write(str(cm))
+        f.write("\n\n")
+
+        f.write("TimeSeriesSplit cross-validation (train-only):\n")
+        f.write(f"- folds      : {CV_SPLITS}\n")
+        f.write(f"- mean AUPRC : {cv_mean:.6f}\n")
+        f.write(f"- std AUPRC  : {cv_std:.6f}\n")
+        f.write("- per-fold AUPRC saved to: rf_cv_auprc.csv\n\n")
 
     print("\nMetrics:\n", metrics)
     print("\nConfusion Matrix:\n", cm)

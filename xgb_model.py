@@ -19,6 +19,7 @@ Outputs:
 import os
 import sys
 from dataclasses import dataclass
+from sklearn.model_selection import TimeSeriesSplit
 
 import numpy as np
 import pandas as pd
@@ -42,6 +43,9 @@ except ImportError:
 # -----------------------------
 # SETTINGS (edit here if needed)
 # -----------------------------
+CV_SPLITS = 5
+CV_SAMPLE_TRAIN_ROWS = 800_000
+
 CSV_FILE = "transaction_data.csv"
 OUTPUT_DIR = "outputs_xgboost"
 
@@ -141,6 +145,48 @@ def pick_threshold_for_f1(y_true, y_prob):
     f1s = (2 * p[:-1] * r[:-1]) / np.maximum(p[:-1] + r[:-1], 1e-12)
     return thr[int(np.argmax(f1s))]
 
+def time_series_cv_auprc_xgb(train_df, n_splits=5, sample_rows=800_000):
+    if sample_rows is not None and len(train_df) > sample_rows:
+        train_df = train_df.iloc[:sample_rows].copy()
+
+    X = train_df.drop(columns=["isfraud"])
+    y = train_df["isfraud"].astype(int).values
+
+    tscv = TimeSeriesSplit(n_splits=n_splits)
+    scores = []
+
+    for fold, (tr_idx, va_idx) in enumerate(tscv.split(X), start=1):
+        X_tr, X_va = X.iloc[tr_idx], X.iloc[va_idx]
+        y_tr, y_va = y[tr_idx], y[va_idx]
+
+        n_neg = int((y_tr == 0).sum())
+        n_pos = int((y_tr == 1).sum())
+        spw = n_neg / max(n_pos, 1)
+
+        model = XGBClassifier(
+            n_estimators=N_TREES,
+            max_depth=MAX_DEPTH,
+            learning_rate=LEARNING_RATE,
+            subsample=0.8,
+            colsample_bytree=0.8,
+            reg_lambda=1.0,
+            scale_pos_weight=spw,
+            eval_metric="logloss",
+            random_state=RANDOM_STATE,
+            n_jobs=-1,
+            tree_method="hist",
+        )
+
+        model.fit(X_tr, y_tr)
+        y_prob = model.predict_proba(X_va)[:, 1]
+
+        auprc = average_precision_score(y_va, y_prob)
+        scores.append(float(auprc))
+
+        print(f"CV fold {fold}/{n_splits} AUPRC: {auprc:.6f}")
+
+    scores = np.array(scores, dtype=float)
+    return scores.tolist(), float(scores.mean()), float(scores.std())
 
 # -----------------------------
 # Main execution
@@ -155,6 +201,14 @@ def main():
     df = add_features(df_raw)
 
     train_df, test_df = time_split(df)
+
+    print("\nRunning TimeSeriesSplit CV on training set...")
+    cv_scores, cv_mean, cv_std = time_series_cv_auprc_xgb(
+    train_df,
+    n_splits=CV_SPLITS,
+    sample_rows=CV_SAMPLE_TRAIN_ROWS
+    )
+    print(f"CV AUPRC mean={cv_mean:.6f}, std={cv_std:.6f}")
 
     if DOWNSAMPLE_RATIO is not None:
         train_df = downsample_train(train_df, DOWNSAMPLE_RATIO)
@@ -224,6 +278,10 @@ def main():
         os.path.join(OUTPUT_DIR, "xgb_feature_importance_top20.csv")
     )
 
+    pd.DataFrame({"cv_fold": list(range(1, len(cv_scores)+1)), "auprc": cv_scores}).to_csv(
+    os.path.join(OUTPUT_DIR, "xgb_cv_auprc.csv"), index=False
+    )
+
     # Save summary text
     with open(os.path.join(OUTPUT_DIR, "report_summary.txt"), "w", encoding="utf-8") as f:
         f.write("XGBoost — Test-set Results\n")
@@ -231,6 +289,12 @@ def main():
         f.write(str(pd.DataFrame([metrics.__dict__])) + "\n\n")
         f.write("Confusion Matrix:\n")
         f.write(str(cm) + "\n")
+
+        f.write("\nTimeSeriesSplit CV (train-only):\n")
+        f.write(f"- folds: {CV_SPLITS}\n")
+        f.write(f"- AUPRC mean: {cv_mean:.6f}\n")
+        f.write(f"- AUPRC std : {cv_std:.6f}\n")
+        f.write("- per-fold saved to xgb_cv_auprc.csv\n")
 
     print("\nMetrics:\n", metrics)
     print("\nConfusion Matrix:\n", cm)

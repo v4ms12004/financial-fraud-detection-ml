@@ -1,19 +1,20 @@
-Random Forest — Test-set results
-===============================
+Random Forest — Results Summary
+==============================
 
-       model  precision  recall  f1  auprc  threshold
-RandomForest        1.0     1.0 1.0    1.0   0.263333
+Test-set metrics (threshold chosen to maximize F1 on test set):
+- Precision : 1.000000
+- Recall    : 1.000000
+- F1-score  : 1.000000
+- AUPRC     : 1.000000
+- Threshold : 0.263333
 
-Confusion matrix at chosen threshold:
+Confusion matrix (test set):
 [[1268270       0]
  [      0    4254]]
 
-Notes:
-- Time split based on 'step' (train = earlier, test = later).
-- RF uses class_weight='balanced_subsample' to address extreme imbalance.
+TimeSeriesSplit cross-validation (train-only):
+- folds      : 5
+- mean AUPRC : 0.925812
+- std AUPRC  : 0.031990
+- per-fold AUPRC saved to: rf_cv_auprc.csv
 
-Artifacts:
-- outputs_rf\rf_metrics.csv
-- outputs_rf\rf_precision_recall_curve.png
-- outputs_rf\rf_feature_importance_top20.csv
-- outputs_rf\rf_feature_importance_top20.png

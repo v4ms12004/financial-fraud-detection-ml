@@ -1,2 +1,2 @@
-model,precision,recall,f1,auprc,threshold
-RandomForest,1.0,1.0,1.0,1.0,0.2633333333333333
+precision,recall,f1,auprc,threshold
+1.0,1.0,1.0,1.0,0.2633333333333333

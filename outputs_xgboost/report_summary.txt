@@ -7,3 +7,9 @@ XGBoost — Test-set Results
 Confusion Matrix:
 [[1268048     222]
  [     59    4195]]
+
+TimeSeriesSplit CV (train-only):
+- folds: 5
+- AUPRC mean: 0.845703
+- AUPRC std : 0.047517
+- per-fold saved to xgb_cv_auprc.csv

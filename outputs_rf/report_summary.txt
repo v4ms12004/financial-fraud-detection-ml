@@ -1,0 +1,19 @@
+Random Forest — Test-set results
+===============================
+
+       model  precision  recall  f1  auprc  threshold
+RandomForest        1.0     1.0 1.0    1.0   0.263333
+
+Confusion matrix at chosen threshold:
+[[1268270       0]
+ [      0    4254]]
+
+Notes:
+- Time split based on 'step' (train = earlier, test = later).
+- RF uses class_weight='balanced_subsample' to address extreme imbalance.
+
+Artifacts:
+- outputs_rf\rf_metrics.csv
+- outputs_rf\rf_precision_recall_curve.png
+- outputs_rf\rf_feature_importance_top20.csv
+- outputs_rf\rf_feature_importance_top20.png

@@ -1,0 +1,9 @@
+XGBoost — Test-set Results
+=========================
+
+   precision    recall        f1     auprc  threshold
+0    0.94974  0.986131  0.967593  0.995422   0.010859
+
+Confusion Matrix:
+[[1268048     222]
+ [     59    4195]]

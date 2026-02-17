@@ -1,0 +1,16 @@
+,0
+newbalanceorig,0.4070387
+org_balance_minus_amount_gap,0.32979807
+delta_org,0.110351816
+type_PAYMENT,0.07640783
+type_TRANSFER,0.020711882
+amount,0.016069163
+type_CASH_OUT,0.010358747
+abs_delta_org,0.0092018815
+abs_delta_dest,0.006345251
+type_DEBIT,0.003555824
+oldbalanceorg,0.003102399
+delta_dest,0.0023862338
+oldbalancedest,0.0022036138
+newbalancedest,0.0013666166
+step,0.0011020699

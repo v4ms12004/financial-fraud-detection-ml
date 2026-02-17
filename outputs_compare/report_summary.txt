@@ -1,0 +1,8 @@
+Model Comparison Summary (Test Set)
+==================================
+
+       model  precision   recall       f1    auprc  threshold
+RandomForest    1.00000 1.000000 1.000000 1.000000   0.263333
+     XGBoost    0.94974 0.986131 0.967593 0.995422   0.010859
+
+Best model by AUPRC: RandomForest (AUPRC=1.000000, F1=1.000000)

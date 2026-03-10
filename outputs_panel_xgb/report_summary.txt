@@ -1,0 +1,28 @@
+XGBoost with Panel + Parsed Features — Summary
+============================================
+
+What features were added:
+- Parsed ID prefixes (orig_prefix, dest_prefix) to capture hidden entity type (e.g., customer vs merchant)
+- Sender (orig) past-only behavior: prior txn count, prior cumulative amount, avg amount so far, tenure, time since previous txn
+- Receiver (dest) past-only behavior: prior txn count, prior cumulative inflow, avg inflow so far, tenure, time since previous txn
+- Balance/amount derived features: deltas, absolute deltas, accounting gap, amount-to-balance ratios
+
+Main split (time-based) results:
+- Train fraction: 0.80
+- Precision: 0.982185
+- Recall   : 1.000000
+- F1       : 0.991013
+- AUPRC    : 0.998759
+- Threshold: 0.060764
+
+Temporal sensitivity tests (distribution-shift style):
+- Train ends at: [0.3, 0.6, 0.9]
+- Test window width: 0.10
+- Saved to: temporal_sensitivity.csv and temporal_sensitivity.md
+
+Saved outputs:
+- xgb_panel_metrics_main.csv
+- pr_curve_main.png
+- feature_importance_top30.csv
+- temporal_sensitivity.csv
+- temporal_sensitivity.md

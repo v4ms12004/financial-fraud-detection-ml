@@ -1,0 +1,42 @@
+Synthetic Dataset Generator — Summary
+==================================================
+
+PURPOSE
+-------
+Test whether the PaySim-trained model detects real fraud
+behavior or PaySim simulator artifacts.
+
+FRAUD PATTERN (identical to PaySim)
+------------------------------------
+1. Fraudster takes over a victim C-account
+2. Full TRANSFER of victim balance to mule C-account
+3. CASH_OUT of mule account to external merchant
+4. Mule balance reduced to 0 (account closed)
+
+WHAT IS DIFFERENT FROM PAYSIM
+------------------------------
+- Random seed        : 7 (PaySim: different)
+- Steps              : 600 (PaySim: 743)
+- Balance mean       : 250,000 (PaySim: ~833k)
+- Amount mean        : 120,000 (PaySim: ~179k)
+- Account ID range   : C9000000+ (PaySim: lower range)
+- Total transactions : 500,000 (PaySim: 6,362,620)
+
+GENERATION SETTINGS
+-------------------
+N_CUSTOMERS   : 3,000
+N_MERCHANTS   : 500
+N_FRAUD_CHAINS: 650
+FRAUD_RATE    : 0.2600%
+
+HOW TO USE
+----------
+1. Run this script to generate synthetic_transaction_data.csv
+2. Rename or symlink it as transaction_data.csv
+3. Run panel_temporal_xgb.py (trained on PaySim) on this data
+4. Compare AUPRC with PaySim test results
+
+INTERPRETATION
+--------------
+High AUPRC on this dataset => model learned generalizable fraud
+Low AUPRC on this dataset  => model overfit to PaySim artifacts

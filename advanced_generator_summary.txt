@@ -1,0 +1,45 @@
+Advanced Synthetic Generator v3 — Summary
+==================================================
+
+KEY INSIGHT FROM FEATURE IMPORTANCE
+----------------------------------------
+dest_tenure         : 38.5% importance  <- mule was brand new
+orig_txn_count_prev : 27.7% importance  <- victim was low activity
+dest_txn_count_prev :  8.7% importance  <- mule had 0 prior txns
+Total from these 3  : 75.0%
+
+FIX APPLIED
+----------------------------------------
+Mule warm-up txns   : 10-50 prior transactions
+Victim selection    : top 40% most active accounts
+Fraud timing        : steps 210+ (after warm-up period)
+
+ALL COMPLICATIONS
+----------------------------------------
+1. Partial drains        : 60-95%
+2. Balance noise         : up to 2%
+3. Split fraud txns      : 30% of chains
+4. Legit large transfers : 2% of normal TRANSFERs
+5. Legit zero drains     : 1% of normal txns
+6. Mule account warm-up  : 10-50 prior txns
+7. Active victim select  : top 40% by txn count
+
+GENERATION STATS
+----------------------------------------
+Total rows      : 499,663
+Fraud rows      : 1,613 (0.3228%)
+Split chains    : 203
+Skipped chains  : 0
+
+HOW TO TEST
+----------------------------------------
+Update SYNTHETIC_CSV in test_on_synthetic.py:
+  SYNTHETIC_CSV = 'advanced_synthetic_data.csv'
+Then run: python test_on_synthetic.py
+
+INTERPRETATION TABLE
+----------------------------------------
+AUPRC >= 0.97  : Model is remarkably robust
+AUPRC 0.85-0.97: Healthy — generalizes with some struggle
+AUPRC 0.70-0.85: Significant drop — some features fragile
+AUPRC < 0.70   : Model relied heavily on tenure/count signals

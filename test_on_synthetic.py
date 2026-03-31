@@ -23,7 +23,7 @@ from xgboost import XGBClassifier
 # -------------------------------------------------------
 
 # Input: synthetic dataset produced by generate_synthetic_data.py
-SYNTHETIC_CSV = "realistic_synthetic_data.csv"
+SYNTHETIC_CSV = "advanced_synthetic_data.csv"
 
 # Output directory
 OUTDIR = "outputs_synthetic_test"

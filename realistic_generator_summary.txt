@@ -1,0 +1,38 @@
+Realistic Synthetic Generator — Summary
+==================================================
+
+COMPLICATIONS ADDED
+------------------------------
+1. Partial drains        : 60-95% of victim balance stolen
+   Breaks: org_balance_minus_amount_gap, amount_over_oldorg
+
+2. Balance noise         : up to 2% fee/rounding noise on 70% of txns
+   Breaks: all accounting consistency features
+
+3. Split fraud txns      : 30% of chains use 2-3 transfers
+   Breaks: clean TRANSFER->CASHOUT two-step pattern
+
+4. Legit large transfers : 2% of normal TRANSFERs take 70-99% of balance
+   Breaks: amount/transfer type as a strong fraud signal
+
+5. Legit zero drains     : 1% of normal txns fully drain sender
+   Breaks: balance goes to zero = fraud heuristic
+
+GENERATION STATS
+------------------------------
+Total rows      : 499,668
+Fraud rows      : 1,618 (0.3238%)
+Split chains    : 206
+Skipped chains  : 0
+
+HOW TO TEST
+------------------------------
+Update SYNTHETIC_CSV in test_on_synthetic.py to:
+  SYNTHETIC_CSV = 'realistic_synthetic_data.csv'
+Then run: python test_on_synthetic.py
+
+EXPECTED OUTCOME
+------------------------------
+AUPRC should drop from ~1.0 toward a more realistic range.
+If AUPRC stays near 1.0: model is remarkably robust.
+If AUPRC drops significantly: fragile features identified.

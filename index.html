@@ -37,7 +37,46 @@ body {
   font-weight: 300;
   line-height: 1.7;
   overflow-x: hidden;
+  cursor: none;
 }
+
+/* ── CUSTOM CURSOR ── */
+#cursor-dot {
+  position: fixed;
+  width: 8px; height: 8px;
+  background: var(--cyan);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  transition: transform .1s, background .2s;
+  box-shadow: 0 0 8px var(--cyan), 0 0 16px rgba(0,212,255,.4);
+}
+
+#cursor-ring {
+  position: fixed;
+  width: 32px; height: 32px;
+  border: 1px solid rgba(0,212,255,.5);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9998;
+  transform: translate(-50%, -50%);
+  transition: transform .12s ease-out, width .2s, height .2s, border-color .2s;
+}
+
+body:has(a:hover) #cursor-dot,
+body:has(button:hover) #cursor-dot {
+  transform: translate(-50%, -50%) scale(2);
+  background: var(--green);
+}
+
+body:has(a:hover) #cursor-ring,
+body:has(button:hover) #cursor-ring {
+  width: 48px; height: 48px;
+  border-color: rgba(0,255,157,.6);
+}
+
+a, button, [onclick] { cursor: none; }
 
 /* ── GRID BACKGROUND ── */
 body::before {
@@ -191,27 +230,42 @@ section + section { padding-top: 4rem; }
 }
 
 .hero-scroll {
-  position: absolute;
-  bottom: 2rem;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  flex-direction: column;
+  display: inline-flex;
   align-items: center;
-  gap: .5rem;
+  gap: .75rem;
+  margin-top: 3rem;
   color: var(--muted);
   font-family: var(--font-code);
   font-size: .7rem;
-  letter-spacing: .1em;
-  animation: bounce 2s infinite;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  opacity: 0;
+  animation: fadeUp .8s 1.2s forwards;
+  text-decoration: none;
 }
 
-.hero-scroll::after {
-  content: '';
+.hero-scroll-line {
   display: block;
-  width: 1px;
-  height: 40px;
-  background: linear-gradient(var(--cyan), transparent);
+  width: 40px;
+  height: 1px;
+  background: linear-gradient(90deg, var(--cyan), transparent);
+  animation: expandLine 2s 1.5s ease-out forwards;
+  transform-origin: left;
+  transform: scaleX(0);
+}
+
+@keyframes expandLine {
+  to { transform: scaleX(1); }
+}
+
+.hero-scroll-arrow {
+  display: inline-block;
+  animation: nudgeDown 1.8s 1.5s ease-in-out infinite;
+}
+
+@keyframes nudgeDown {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(4px); }
 }
 
 /* ── SECTION HEADERS ── */
@@ -875,7 +929,11 @@ footer {
       <div class="stat-label">Fraud Cases</div>
     </div>
   </div>
-  <div class="hero-scroll">SCROLL</div>
+  <a href="#about" class="hero-scroll">
+    <span class="hero-scroll-line"></span>
+    <span class="hero-scroll-arrow">↓</span>
+    <span>Explore the research</span>
+  </a>
 </div>
 
 <!-- ABOUT -->
@@ -1654,15 +1712,15 @@ new Chart(document.getElementById('experimentChart'), {
   type: 'bar',
   data: {
     labels: [
-      'PaySim (Reference)',
+      'PaySim\n(Reference)',
       'Clean Synthetic\n(Overall)',
       'Realistic Synthetic\n(Overall)',
       'Advanced Synthetic\n(Overall)',
-      'Advanced Synthetic\n(30% Window)'
+      'Advanced Synthetic\n(30% Train Window)'
     ],
     datasets: [{
       label: 'AUPRC',
-      data: [0.9988, 1.0, 1.0, 1.0, 0.003],
+      data: [0.9988, 1.0, 1.0, 1.0, 0.0025],
       backgroundColor: [
         'rgba(0,212,255,.5)',
         'rgba(0,255,157,.5)',
@@ -1682,12 +1740,77 @@ new Chart(document.getElementById('experimentChart'), {
   },
   options: {
     responsive: true,
-    plugins: { legend: { display: false } },
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: (ctx) => {
+            const val = ctx.raw;
+            if (val < 0.01) return ` AUPRC: ${val.toFixed(4)} ← Training threshold collapse`;
+            return ` AUPRC: ${val.toFixed(4)}`;
+          }
+        }
+      }
+    },
     scales: {
-      x: { grid: { color: 'rgba(30,30,63,.5)' }, ticks: { maxRotation: 0 } },
-      y: { grid: { color: 'rgba(30,30,63,.5)' }, min: 0, max: 1.05 }
+      x: { grid: { color: 'rgba(30,30,63,.5)' }, ticks: { maxRotation: 0, font: { size: 10 } } },
+      y: { grid: { color: 'rgba(30,30,63,.5)' }, min: 0, max: 1.05,
+           title: { display: true, text: 'AUPRC', color: '#7070a0' } }
     }
   }
+});
+</script>
+<!-- CUSTOM CURSOR -->
+<div id="cursor-dot"></div>
+<div id="cursor-ring"></div>
+
+<script>
+const dot  = document.getElementById('cursor-dot');
+const ring = document.getElementById('cursor-ring');
+let mx = 0, my = 0, rx = 0, ry = 0;
+
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  dot.style.left  = mx + 'px';
+  dot.style.top   = my + 'px';
+});
+
+// Ring follows with smooth lag
+function animateRing() {
+  rx += (mx - rx) * 0.12;
+  ry += (my - ry) * 0.12;
+  ring.style.left = rx + 'px';
+  ring.style.top  = ry + 'px';
+  requestAnimationFrame(animateRing);
+}
+animateRing();
+
+// Hide cursors when leaving window
+document.addEventListener('mouseleave', () => {
+  dot.style.opacity  = '0';
+  ring.style.opacity = '0';
+});
+document.addEventListener('mouseenter', () => {
+  dot.style.opacity  = '1';
+  ring.style.opacity = '1';
+});
+
+// Expand ring on clickable elements
+document.querySelectorAll('a, button, .card, .exp-card, .flow-step').forEach(el => {
+  el.addEventListener('mouseenter', () => {
+    ring.style.width  = '48px';
+    ring.style.height = '48px';
+    ring.style.borderColor = 'rgba(0,255,157,.7)';
+    dot.style.background = 'var(--green)';
+    dot.style.boxShadow  = '0 0 8px var(--green), 0 0 20px rgba(0,255,157,.4)';
+  });
+  el.addEventListener('mouseleave', () => {
+    ring.style.width  = '32px';
+    ring.style.height = '32px';
+    ring.style.borderColor = 'rgba(0,212,255,.5)';
+    dot.style.background = 'var(--cyan)';
+    dot.style.boxShadow  = '0 0 8px var(--cyan), 0 0 16px rgba(0,212,255,.4)';
+  });
 });
 </script>
 </body>

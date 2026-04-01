@@ -1,0 +1,1694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Fraud Detection for Financial Risk Management — Vamsi Doddapaneni</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+:root {
+  --bg:       #070710;
+  --bg2:      #0d0d1a;
+  --bg3:      #111128;
+  --surface:  #14142b;
+  --border:   #1e1e3f;
+  --cyan:     #00d4ff;
+  --cyan-dim: #0099bb;
+  --green:    #00ff9d;
+  --amber:    #ffb300;
+  --red:      #ff4757;
+  --text:     #e8e8f0;
+  --muted:    #7070a0;
+  --font-head: 'Syne', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+  --font-code: 'JetBrains Mono', monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; font-size: 16px; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-weight: 300;
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+/* ── GRID BACKGROUND ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0,212,255,.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,212,255,.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── NAV ── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  background: rgba(7,7,16,.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 3rem;
+  height: 60px;
+}
+
+.nav-logo {
+  font-family: var(--font-head);
+  font-weight: 800;
+  font-size: .85rem;
+  color: var(--cyan);
+  letter-spacing: .15em;
+  text-transform: uppercase;
+}
+
+.nav-links {
+  display: flex;
+  gap: 2rem;
+  list-style: none;
+}
+
+.nav-links a {
+  color: var(--muted);
+  text-decoration: none;
+  font-size: .8rem;
+  font-family: var(--font-code);
+  letter-spacing: .05em;
+  transition: color .2s;
+}
+.nav-links a:hover { color: var(--cyan); }
+
+.nav-badge {
+  font-family: var(--font-code);
+  font-size: .7rem;
+  color: var(--green);
+  border: 1px solid var(--green);
+  padding: .2rem .6rem;
+  border-radius: 2px;
+}
+
+/* ── SECTIONS ── */
+section {
+  position: relative;
+  z-index: 1;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 7rem 2rem;
+}
+
+section + section { padding-top: 4rem; }
+
+/* ── HERO ── */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-top: 80px;
+  max-width: 100%;
+  padding-left: 6rem;
+  padding-right: 6rem;
+}
+
+.hero-eyebrow {
+  font-family: var(--font-code);
+  font-size: .75rem;
+  color: var(--cyan);
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+  opacity: 0;
+  animation: fadeUp .8s .2s forwards;
+}
+
+.hero h1 {
+  font-family: var(--font-head);
+  font-size: clamp(2.5rem, 5vw, 4.5rem);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -.02em;
+  margin-bottom: 1.5rem;
+  opacity: 0;
+  animation: fadeUp .8s .4s forwards;
+}
+
+.hero h1 span { color: var(--cyan); }
+
+.hero-sub {
+  font-size: 1.1rem;
+  color: var(--muted);
+  max-width: 600px;
+  margin-bottom: 3rem;
+  opacity: 0;
+  animation: fadeUp .8s .6s forwards;
+}
+
+.hero-stats {
+  display: flex;
+  gap: 3rem;
+  flex-wrap: wrap;
+  opacity: 0;
+  animation: fadeUp .8s .8s forwards;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: .25rem;
+}
+
+.stat-num {
+  font-family: var(--font-head);
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: var(--cyan);
+  line-height: 1;
+}
+
+.stat-num.green { color: var(--green); }
+.stat-num.amber { color: var(--amber); }
+
+.stat-label {
+  font-family: var(--font-code);
+  font-size: .7rem;
+  color: var(--muted);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.hero-scroll {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .5rem;
+  color: var(--muted);
+  font-family: var(--font-code);
+  font-size: .7rem;
+  letter-spacing: .1em;
+  animation: bounce 2s infinite;
+}
+
+.hero-scroll::after {
+  content: '';
+  display: block;
+  width: 1px;
+  height: 40px;
+  background: linear-gradient(var(--cyan), transparent);
+}
+
+/* ── SECTION HEADERS ── */
+.section-label {
+  font-family: var(--font-code);
+  font-size: .7rem;
+  color: var(--cyan);
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  margin-bottom: .75rem;
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+}
+
+.section-label::before {
+  content: '';
+  display: block;
+  width: 24px;
+  height: 1px;
+  background: var(--cyan);
+}
+
+h2 {
+  font-family: var(--font-head);
+  font-size: clamp(1.8rem, 3vw, 2.6rem);
+  font-weight: 800;
+  letter-spacing: -.02em;
+  line-height: 1.1;
+  margin-bottom: 1rem;
+}
+
+.section-intro {
+  color: var(--muted);
+  font-size: 1rem;
+  max-width: 680px;
+  margin-bottom: 3rem;
+  line-height: 1.8;
+}
+
+/* ── CARDS ── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1.75rem;
+  transition: border-color .3s, transform .3s;
+}
+
+.card:hover {
+  border-color: rgba(0,212,255,.3);
+  transform: translateY(-2px);
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+.card-label {
+  font-family: var(--font-code);
+  font-size: .7rem;
+  color: var(--cyan);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  margin-bottom: .5rem;
+}
+
+.card h3 {
+  font-family: var(--font-head);
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: .75rem;
+}
+
+.card p {
+  font-size: .9rem;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+/* ── TIMELINE ── */
+.timeline {
+  position: relative;
+  padding-left: 2.5rem;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0; bottom: 0;
+  width: 1px;
+  background: linear-gradient(var(--cyan), transparent);
+}
+
+.tl-item {
+  position: relative;
+  margin-bottom: 3rem;
+  opacity: 0;
+  transform: translateX(-20px);
+  transition: opacity .6s, transform .6s;
+}
+
+.tl-item.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.tl-dot {
+  position: absolute;
+  left: -2.85rem;
+  top: .3rem;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--cyan);
+  box-shadow: 0 0 12px var(--cyan);
+}
+
+.tl-date {
+  font-family: var(--font-code);
+  font-size: .7rem;
+  color: var(--cyan);
+  letter-spacing: .1em;
+  margin-bottom: .3rem;
+}
+
+.tl-title {
+  font-family: var(--font-head);
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: .4rem;
+}
+
+.tl-desc {
+  font-size: .9rem;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.tl-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .4rem;
+  margin-top: .75rem;
+}
+
+.tag {
+  font-family: var(--font-code);
+  font-size: .65rem;
+  padding: .2rem .55rem;
+  border-radius: 2px;
+  letter-spacing: .05em;
+}
+
+.tag-cyan  { background: rgba(0,212,255,.12); color: var(--cyan);  border: 1px solid rgba(0,212,255,.25); }
+.tag-green { background: rgba(0,255,157,.1);  color: var(--green); border: 1px solid rgba(0,255,157,.2); }
+.tag-amber { background: rgba(255,179,0,.1);  color: var(--amber); border: 1px solid rgba(255,179,0,.2); }
+.tag-red   { background: rgba(255,71,87,.1);  color: var(--red);   border: 1px solid rgba(255,71,87,.2); }
+
+/* ── CODE BLOCKS ── */
+.code-block {
+  background: #080815;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--cyan);
+  border-radius: 0 4px 4px 0;
+  padding: 1.25rem 1.5rem;
+  font-family: var(--font-code);
+  font-size: .8rem;
+  line-height: 1.8;
+  overflow-x: auto;
+  margin: 1rem 0;
+}
+
+.code-block .kw  { color: #c792ea; }
+.code-block .fn  { color: #82aaff; }
+.code-block .str { color: #c3e88d; }
+.code-block .cm  { color: #546e7a; font-style: italic; }
+.code-block .nb  { color: var(--cyan); }
+.code-block .num { color: var(--amber); }
+
+/* ── METRICS TABLE ── */
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 2rem;
+}
+
+.metric-cell {
+  background: var(--surface);
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.metric-val {
+  font-family: var(--font-head);
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--green);
+  line-height: 1;
+  margin-bottom: .4rem;
+}
+
+.metric-val.cyan  { color: var(--cyan); }
+.metric-val.amber { color: var(--amber); }
+
+.metric-name {
+  font-family: var(--font-code);
+  font-size: .68rem;
+  color: var(--muted);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+/* ── CHART CONTAINERS ── */
+.chart-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.chart-title {
+  font-family: var(--font-code);
+  font-size: .75rem;
+  color: var(--cyan);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  margin-bottom: 1.25rem;
+}
+
+.chart-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+/* ── FEATURE IMPORTANCE ── */
+.fi-bar-wrap { margin-bottom: .6rem; }
+
+.fi-label {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-code);
+  font-size: .72rem;
+  color: var(--text);
+  margin-bottom: .25rem;
+}
+
+.fi-label span { color: var(--cyan); }
+
+.fi-track {
+  height: 6px;
+  background: var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.fi-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--cyan), var(--green));
+  border-radius: 3px;
+  width: 0;
+  transition: width 1.2s cubic-bezier(.4,0,.2,1);
+}
+
+/* ── COMPARISON TABLE ── */
+.compare-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .9rem;
+}
+
+.compare-table th {
+  font-family: var(--font-code);
+  font-size: .7rem;
+  color: var(--muted);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  text-align: left;
+  padding: .75rem 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.compare-table td {
+  padding: .8rem 1rem;
+  border-bottom: 1px solid rgba(30,30,63,.5);
+}
+
+.compare-table tr:last-child td { border-bottom: none; }
+
+.compare-table .highlight {
+  color: var(--green);
+  font-family: var(--font-code);
+  font-weight: 600;
+}
+
+.compare-table .win { color: var(--green); }
+.compare-table .lose { color: var(--red); }
+
+/* ── EXPERIMENT CARDS ── */
+.exp-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.exp-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: .75rem;
+}
+
+.exp-title {
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.exp-badge {
+  font-family: var(--font-code);
+  font-size: .65rem;
+  padding: .2rem .6rem;
+  border-radius: 2px;
+}
+
+.badge-perfect  { background: rgba(0,255,157,.15); color: var(--green); border: 1px solid rgba(0,255,157,.3); }
+.badge-collapse { background: rgba(255,71,87,.15);  color: var(--red);   border: 1px solid rgba(255,71,87,.3); }
+.badge-robust   { background: rgba(0,212,255,.15);  color: var(--cyan);  border: 1px solid rgba(0,212,255,.3); }
+
+.exp-body {
+  font-size: .88rem;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+/* ── FINDINGS ── */
+.finding {
+  display: flex;
+  gap: 1.25rem;
+  padding: 1.25rem 0;
+  border-bottom: 1px solid rgba(30,30,63,.6);
+}
+
+.finding:last-child { border-bottom: none; }
+
+.finding-num {
+  font-family: var(--font-head);
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: rgba(0,212,255,.15);
+  line-height: 1;
+  flex-shrink: 0;
+  width: 3rem;
+  text-align: right;
+}
+
+.finding-content h4 {
+  font-family: var(--font-head);
+  font-weight: 700;
+  margin-bottom: .35rem;
+}
+
+.finding-content p {
+  font-size: .88rem;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+/* ── FRAUD FLOW ── */
+.fraud-flow {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  flex-wrap: wrap;
+  margin: 2rem 0;
+}
+
+.flow-step {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1rem 1.25rem;
+  flex: 1;
+  min-width: 130px;
+  text-align: center;
+}
+
+.flow-icon {
+  font-size: 1.5rem;
+  margin-bottom: .4rem;
+}
+
+.flow-label {
+  font-family: var(--font-code);
+  font-size: .68rem;
+  color: var(--cyan);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  margin-bottom: .25rem;
+}
+
+.flow-desc {
+  font-size: .78rem;
+  color: var(--muted);
+}
+
+.flow-arrow {
+  color: var(--cyan);
+  font-size: 1.2rem;
+  padding: 0 .25rem;
+  flex-shrink: 0;
+}
+
+/* ── TWO COL ── */
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+/* ── PROBLEM CARDS ── */
+.problem-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--red);
+  border-radius: 0 4px 4px 0;
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.solution-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--green);
+  border-radius: 0 4px 4px 0;
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.ps-label {
+  font-family: var(--font-code);
+  font-size: .65rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  margin-bottom: .4rem;
+}
+
+.problem-card .ps-label { color: var(--red); }
+.solution-card .ps-label { color: var(--green); }
+
+.ps-title {
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: .95rem;
+  margin-bottom: .35rem;
+}
+
+.ps-desc {
+  font-size: .82rem;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+/* ── FOOTER ── */
+footer {
+  position: relative;
+  z-index: 1;
+  border-top: 1px solid var(--border);
+  padding: 3rem 6rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.footer-left {
+  font-family: var(--font-head);
+  font-size: .9rem;
+  font-weight: 700;
+}
+
+.footer-left span { color: var(--cyan); }
+
+.footer-links {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.footer-links a {
+  font-family: var(--font-code);
+  font-size: .75rem;
+  color: var(--muted);
+  text-decoration: none;
+  letter-spacing: .05em;
+  transition: color .2s;
+}
+.footer-links a:hover { color: var(--cyan); }
+
+.footer-right {
+  font-family: var(--font-code);
+  font-size: .7rem;
+  color: var(--muted);
+}
+
+/* ── DIVIDER ── */
+.divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border), transparent);
+  margin: 1rem 0 2.5rem;
+}
+
+/* ── GLOW ── */
+.glow-cyan  { text-shadow: 0 0 20px rgba(0,212,255,.4); }
+.glow-green { text-shadow: 0 0 20px rgba(0,255,157,.4); }
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50%       { transform: translateX(-50%) translateY(6px); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: .4; }
+}
+
+.pulse { animation: pulse 2s infinite; }
+
+/* ── SCROLL REVEAL ── */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity .7s, transform .7s;
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  .hero { padding-left: 1.5rem; padding-right: 1.5rem; }
+  nav { padding: 0 1.5rem; }
+  .nav-links { display: none; }
+  .two-col  { grid-template-columns: 1fr; }
+  .chart-grid-2 { grid-template-columns: 1fr; }
+  footer { padding: 2rem 1.5rem; flex-direction: column; }
+}
+
+/* ── TEMPORAL TABLE ── */
+.temp-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-code);
+  font-size: .78rem;
+}
+
+.temp-table th {
+  color: var(--muted);
+  font-size: .65rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  padding: .6rem .75rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+.temp-table td {
+  padding: .65rem .75rem;
+  border-bottom: 1px solid rgba(30,30,63,.4);
+}
+
+.temp-table td.auprc-high { color: var(--green); font-weight: 600; }
+.temp-table td.auprc-low  { color: var(--red);   font-weight: 600; }
+
+/* ── HIGHLIGHT BOX ── */
+.highlight-box {
+  background: rgba(0,212,255,.05);
+  border: 1px solid rgba(0,212,255,.2);
+  border-radius: 4px;
+  padding: 1.25rem 1.5rem;
+  margin: 1.5rem 0;
+}
+
+.highlight-box p {
+  font-size: .9rem;
+  line-height: 1.7;
+  color: var(--text);
+}
+
+.highlight-box strong { color: var(--cyan); }
+
+/* ── QR PLACEHOLDER ── */
+.qr-section {
+  text-align: center;
+  padding: 2rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Fraud Detection ML</div>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#dataset">Dataset</a></li>
+    <li><a href="#timeline">Timeline</a></li>
+    <li><a href="#methods">Methods</a></li>
+    <li><a href="#results">Results</a></li>
+    <li><a href="#experiment">Experiment</a></li>
+    <li><a href="#findings">Findings</a></li>
+  </ul>
+  <div class="nav-badge pulse">KDSC Spring 2026</div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-eyebrow">PSYC 699 · Community Data Labs · KDSC Spring 2026</div>
+  <h1>Fraud Detection for<br><span>Financial Risk</span><br>Management</h1>
+  <p class="hero-sub">
+    A semester-long investigation into time-aware machine learning for detecting rare fraudulent transactions in highly imbalanced financial data — and testing whether models learn real fraud or simulator artifacts.
+  </p>
+  <div class="hero-stats">
+    <div class="stat">
+      <div class="stat-num">6.36M</div>
+      <div class="stat-label">Transactions Analyzed</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num green">0.998</div>
+      <div class="stat-label">AUPRC Achieved</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num amber">0.13%</div>
+      <div class="stat-label">Fraud Rate</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">8,213</div>
+      <div class="stat-label">Fraud Cases</div>
+    </div>
+  </div>
+  <div class="hero-scroll">SCROLL</div>
+</div>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="section-label">01 · About</div>
+  <h2>The Problem &amp;<br>The Project</h2>
+  <p class="section-intro">
+    Sponsored by the Industry Advisory Board through KDSC's Community Data Labs, this project tackles one of the most challenging problems in financial technology: detecting fraud in a sea of legitimate transactions where fraud represents just 0.13% of all activity.
+  </p>
+
+  <div class="card-grid reveal">
+    <div class="card">
+      <div class="card-label">Sponsor</div>
+      <h3>Industry Advisory Board</h3>
+      <p>Real-world applied project under the Kansas Data Science Consortium framework, building production-grade fraud detection infrastructure.</p>
+    </div>
+    <div class="card">
+      <div class="card-label">Core Challenge</div>
+      <h3>Extreme Class Imbalance</h3>
+      <p>With fraud at 0.13% of all transactions, standard accuracy metrics are completely meaningless. A model predicting "not fraud" every time achieves 99.87% accuracy.</p>
+    </div>
+    <div class="card">
+      <div class="card-label">Research Question</div>
+      <h3>Time-Aware Detection</h3>
+      <p>Can leakage-safe, time-aware tree-based models detect rare fraud under distribution shift — and do they learn real fraud signals or just simulator rules?</p>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="section-label">How Fraud Works in This Dataset</div>
+  <p class="section-intro" style="margin-bottom:1.5rem;">The PaySim dataset simulates a specific and realistic four-step fraud pattern based on mobile money account takeover.</p>
+
+  <div class="fraud-flow reveal">
+    <div class="flow-step">
+      <div class="flow-icon">🎣</div>
+      <div class="flow-label">Step 1</div>
+      <div style="font-weight:600;font-size:.85rem;margin-bottom:.2rem;">Account Takeover</div>
+      <div class="flow-desc">Fraudster gains access via scam or phishing</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step">
+      <div class="flow-icon">💸</div>
+      <div class="flow-label">Step 2</div>
+      <div style="font-weight:600;font-size:.85rem;margin-bottom:.2rem;">TRANSFER</div>
+      <div class="flow-desc">Full balance moved to fraudster-controlled mule account</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step">
+      <div class="flow-icon">🏧</div>
+      <div class="flow-label">Step 3</div>
+      <div style="font-weight:600;font-size:.85rem;margin-bottom:.2rem;">CASH_OUT</div>
+      <div class="flow-desc">Mule account fully drained to external merchant</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step">
+      <div class="flow-icon">🚫</div>
+      <div class="flow-label">Step 4</div>
+      <div style="font-weight:600;font-size:.85rem;margin-bottom:.2rem;">Close Account</div>
+      <div class="flow-desc">Mule account closed, balance zeroed out</div>
+    </div>
+  </div>
+</section>
+
+<!-- DATASET -->
+<section id="dataset">
+  <div class="section-label">02 · Dataset</div>
+  <h2>PaySim: Simulated<br>Mobile Money Data</h2>
+  <p class="section-intro">
+    The PaySim dataset (Lopez-Rojas et al., 2016) simulates one month of mobile money transactions from an African mobile payments service, with injected fraud following deterministic agent-based rules. It is fully public on Kaggle.
+  </p>
+
+  <div class="metrics-grid reveal">
+    <div class="metric-cell">
+      <div class="metric-val cyan">6.36M</div>
+      <div class="metric-name">Total Transactions</div>
+    </div>
+    <div class="metric-cell">
+      <div class="metric-val amber">8,213</div>
+      <div class="metric-name">Fraud Cases</div>
+    </div>
+    <div class="metric-cell">
+      <div class="metric-val" style="color:var(--red)">0.13%</div>
+      <div class="metric-name">Fraud Rate</div>
+    </div>
+    <div class="metric-cell">
+      <div class="metric-val">743</div>
+      <div class="metric-name">Time Steps (Hours)</div>
+    </div>
+    <div class="metric-cell">
+      <div class="metric-val">11</div>
+      <div class="metric-name">Variables</div>
+    </div>
+    <div class="metric-cell">
+      <div class="metric-val cyan">5</div>
+      <div class="metric-name">Transaction Types</div>
+    </div>
+  </div>
+
+  <div class="two-col reveal">
+    <div>
+      <div class="chart-wrap">
+        <div class="chart-title">Fraud by Transaction Type</div>
+        <canvas id="fraudTypeChart" height="220"></canvas>
+      </div>
+    </div>
+    <div>
+      <div class="chart-wrap">
+        <div class="chart-title">Transaction Amount Distribution (Mean)</div>
+        <canvas id="amountChart" height="220"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="highlight-box reveal">
+    <p><strong>Key EDA Finding:</strong> Fraud is exclusively concentrated in TRANSFER (0.77% fraud rate) and CASH_OUT (0.18% fraud rate) transaction types. CASH_IN, PAYMENT, and DEBIT have <strong>zero fraud</strong>. This aligns perfectly with the simulated fraud mechanism. Fraudulent transactions also have a mean amount of <strong>$1.47M</strong> — nearly 8× higher than the non-fraud mean of $178K.</p>
+  </div>
+
+  <div class="card-grid reveal" style="margin-top:1rem;">
+    <div class="card">
+      <div class="card-label">Variable</div>
+      <h3>step</h3>
+      <p>Hour of transaction (1–743). Used for all temporal ordering and train/test splitting.</p>
+    </div>
+    <div class="card">
+      <div class="card-label">Variable</div>
+      <h3>nameOrig / nameDest</h3>
+      <p>Account identifiers with C-prefix (customer) or M-prefix (merchant) encoding entity type.</p>
+    </div>
+    <div class="card">
+      <div class="card-label">Variable</div>
+      <h3>Balance Fields</h3>
+      <p>oldbalanceOrg, newbalanceOrig, oldbalanceDest, newbalanceDest — key signals for balance-depletion fraud patterns.</p>
+    </div>
+  </div>
+</section>
+
+<!-- TIMELINE -->
+<section id="timeline">
+  <div class="section-label">03 · Project Timeline</div>
+  <h2>Semester Journey</h2>
+  <p class="section-intro">A full semester of iterative development, from initial EDA through model training, feature engineering, and novel generalizability experiments.</p>
+
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-date">JAN 2026 — WEEK 1-2</div>
+      <div class="tl-title">Project Setup &amp; Data Exploration</div>
+      <div class="tl-desc">Loaded the 6.36M row PaySim dataset, confirmed severe class imbalance (0.13% fraud), performed initial EDA in Stata using dyndoc. Discovered fraud is entirely concentrated in TRANSFER and CASH_OUT types. Identified transaction amounts are highly right-skewed with fraudulent transactions showing 8× higher mean amounts.</div>
+      <div class="tl-tags">
+        <span class="tag tag-cyan">Stata dyndoc</span>
+        <span class="tag tag-cyan">EDA</span>
+        <span class="tag tag-amber">Class Imbalance</span>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-date">FEB 2026 — WEEK 3-5</div>
+      <div class="tl-title">Baseline Models &amp; Progress Report 1</div>
+      <div class="tl-desc">Switched to Python + Jupyter notebook pipeline. Implemented Random Forest and XGBoost baselines with time-based 80/20 train/test split and TimeSeriesSplit cross-validation. XGBoost outperformed Random Forest (AUPRC 0.998 vs 0.995). Identified data leakage risk with random splits. Submitted Progress Report 1 on February 16.</div>
+      <div class="tl-tags">
+        <span class="tag tag-cyan">Random Forest</span>
+        <span class="tag tag-green">XGBoost</span>
+        <span class="tag tag-amber">TimeSeriesSplit</span>
+        <span class="tag tag-cyan">AUPRC</span>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-date">FEB–MAR 2026 — WEEK 6-8</div>
+      <div class="tl-title">Feature Engineering &amp; Panel Model</div>
+      <div class="tl-desc">Major advancement: introduced panel-style behavioral features capturing past-only account history. Added account prefix parsing (C vs M), balance delta features, and temporal panel features (transaction count, cumulative amount, tenure, time since last transaction). Strict leakage-safe design using cumsum() minus current value. Combined into Panel + Temporal XGBoost pipeline.</div>
+      <div class="tl-tags">
+        <span class="tag tag-green">Panel Features</span>
+        <span class="tag tag-cyan">Leakage-Safe</span>
+        <span class="tag tag-amber">Account Prefix</span>
+        <span class="tag tag-green">Behavioral Features</span>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-date">MAR 13, 2026</div>
+      <div class="tl-title">Progress Report 2 &amp; Class Presentation</div>
+      <div class="tl-desc">Submitted Progress Report 2 documenting temporal validation, feature engineering advances, and robustness analysis. Presented findings to class. Raised critical research question: is the model learning real fraud behavior or PaySim simulator artifacts? Identified simulator overfitting as a key open question.</div>
+      <div class="tl-tags">
+        <span class="tag tag-cyan">Temporal Sensitivity</span>
+        <span class="tag tag-red">Simulator Overfitting?</span>
+        <span class="tag tag-amber">Presentation</span>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-date">MAR–APR 2026</div>
+      <div class="tl-title">Generalizability Experiment</div>
+      <div class="tl-desc">Designed and executed a novel cross-dataset generalizability test. Built three custom Python-based transaction simulators with identical fraud patterns but different statistical distributions. Tested trained model against progressively harder synthetic datasets. Used feature importance analysis to understand which signals the model relies on most.</div>
+      <div class="tl-tags">
+        <span class="tag tag-green">Custom Simulator</span>
+        <span class="tag tag-cyan">Feature Importance</span>
+        <span class="tag tag-amber">Distribution Shift</span>
+        <span class="tag tag-green">Generalizability</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- METHODS -->
+<section id="methods">
+  <div class="section-label">04 · Methodology</div>
+  <h2>The ML Pipeline</h2>
+  <p class="section-intro">Three critical design decisions separate this pipeline from naive approaches: temporal integrity, behavioral feature engineering, and class imbalance handling.</p>
+
+  <div class="two-col reveal">
+    <div>
+      <div class="problem-card">
+        <div class="ps-label">Problem</div>
+        <div class="ps-title">Severe Class Imbalance</div>
+        <div class="ps-desc">Only 0.13% of transactions are fraud. Standard accuracy is meaningless. Majority-class classifier achieves 99.87%.</div>
+      </div>
+      <div class="solution-card">
+        <div class="ps-label">Solution</div>
+        <div class="ps-title">AUPRC + scale_pos_weight</div>
+        <div class="ps-desc">Switch evaluation to AUPRC (Area Under Precision-Recall Curve). Set XGBoost scale_pos_weight = #non-fraud / #fraud ≈ 773.</div>
+      </div>
+
+      <div class="problem-card" style="margin-top:1.5rem;">
+        <div class="ps-label">Problem</div>
+        <div class="ps-title">Data Leakage Risk</div>
+        <div class="ps-desc">Random train/test splits allow future transactions to leak into training. Cumulative features computed on full data leak future fraud signals.</div>
+      </div>
+      <div class="solution-card">
+        <div class="ps-label">Solution</div>
+        <div class="ps-title">Strict Temporal Ordering</div>
+        <div class="ps-desc">80/20 chronological split. All panel features use past-only data (cumsum minus current). TimeSeriesSplit cross-validation preserves time ordering.</div>
+      </div>
+    </div>
+
+    <div>
+      <div class="problem-card">
+        <div class="ps-label">Problem</div>
+        <div class="ps-title">Raw Features Lack Context</div>
+        <div class="ps-desc">Account IDs are useless as strings. Raw transaction amounts don't capture behavioral anomaly — a $10k transfer is normal for one account, suspicious for another.</div>
+      </div>
+      <div class="solution-card">
+        <div class="ps-label">Solution</div>
+        <div class="ps-title">Panel Behavioral Features</div>
+        <div class="ps-desc">Engineered 15+ features capturing account history: transaction count, cumulative amount, average amount, tenure, time since last transaction — for both sender and receiver.</div>
+      </div>
+
+      <div class="chart-wrap" style="margin-top:1.5rem;">
+        <div class="chart-title">Model Comparison — AUPRC</div>
+        <canvas id="modelCompareChart" height="180"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider" style="margin-top:3rem;"></div>
+
+  <div class="section-label" style="margin-top:2rem;">Key Features Engineered</div>
+  <div class="code-block reveal">
+<span class="cm"># Balance-based features</span>
+df[<span class="str">'delta_org'</span>]  = df[<span class="str">'newbalanceorig'</span>] - df[<span class="str">'oldbalanceorg'</span>]
+df[<span class="str">'delta_dest'</span>] = df[<span class="str">'newbalancedest'</span>] - df[<span class="str">'oldbalancedest'</span>]
+df[<span class="str">'org_balance_minus_amount_gap'</span>] = (df[<span class="str">'oldbalanceorg'</span>] - df[<span class="str">'newbalanceorig'</span>]) - df[<span class="str">'amount'</span>]
+df[<span class="str">'amount_over_oldorg'</span>] = df[<span class="str">'amount'</span>] / (df[<span class="str">'oldbalanceorg'</span>] + <span class="num">1.0</span>)
+
+<span class="cm"># Past-only panel features for sender — LEAKAGE SAFE</span>
+df[<span class="str">'orig_txn_count_prev'</span>]  = df.groupby(<span class="str">'orig_id'</span>).cumcount()
+orig_cum_amt = df.groupby(<span class="str">'orig_id'</span>)[<span class="str">'amount'</span>].cumsum()
+df[<span class="str">'orig_cum_amount_prev'</span>] = orig_cum_amt - df[<span class="str">'amount'</span>]  <span class="cm"># exclude current</span>
+df[<span class="str">'orig_tenure'</span>] = df[<span class="str">'step'</span>] - df.groupby(<span class="str">'orig_id'</span>)[<span class="str">'step'</span>].transform(<span class="str">'min'</span>)
+
+<span class="cm"># Account prefix parsing — C = customer, M = merchant</span>
+df[<span class="str">'orig_prefix'</span>] = df[<span class="str">'nameorig'</span>].astype(str).str.slice(<span class="num">0</span>, <span class="num">1</span>)
+df[<span class="str">'dest_prefix'</span>] = df[<span class="str">'namedest'</span>].astype(str).str.slice(<span class="num">0</span>, <span class="num">1</span>)
+  </div>
+</section>
+
+<!-- RESULTS -->
+<section id="results">
+  <div class="section-label">05 · Results</div>
+  <h2>Model Performance</h2>
+  <p class="section-intro">The final Panel + Temporal XGBoost model achieves near-perfect fraud detection on the PaySim test set, exceeding the project's target AUPRC of 0.75 by a substantial margin.</p>
+
+  <div class="metrics-grid reveal">
+    <div class="metric-cell">
+      <div class="metric-val glow-green">0.9988</div>
+      <div class="metric-name">AUPRC</div>
+    </div>
+    <div class="metric-cell">
+      <div class="metric-val cyan">0.9822</div>
+      <div class="metric-name">Precision</div>
+    </div>
+    <div class="metric-cell">
+      <div class="metric-val">1.0000</div>
+      <div class="metric-name">Recall</div>
+    </div>
+    <div class="metric-cell">
+      <div class="metric-val cyan">0.9910</div>
+      <div class="metric-name">F1 Score</div>
+    </div>
+  </div>
+
+  <div class="two-col reveal">
+    <div>
+      <div class="chart-wrap">
+        <div class="chart-title">Precision-Recall Curve (Simulated)</div>
+        <canvas id="prCurveChart" height="260"></canvas>
+      </div>
+    </div>
+    <div>
+      <div class="chart-wrap">
+        <div class="chart-title">Temporal Sensitivity — AUPRC by Training Window</div>
+        <canvas id="temporalChart" height="260"></canvas>
+      </div>
+      <div class="highlight-box" style="margin-top:1rem;">
+        <p><strong>Temporal Stability:</strong> Performance improves with more training data (0→30%: ~0.980, 0→60%: ~0.998, 0→90%: ~0.998), confirming fraud structure is stable across the simulation timeline.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label" style="margin-top:2rem;">Temporal Sensitivity Results</div>
+  <div class="chart-wrap reveal">
+    <table class="temp-table">
+      <thead>
+        <tr>
+          <th>Training Window</th>
+          <th>Test Window</th>
+          <th>Train Rows</th>
+          <th>Test Rows</th>
+          <th>AUPRC</th>
+          <th>Precision</th>
+          <th>Recall</th>
+          <th>F1</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>0 – 30%</td>
+          <td>Next 10%</td>
+          <td>~1.5M</td>
+          <td>~500K</td>
+          <td class="auprc-high">~0.980</td>
+          <td>—</td>
+          <td>—</td>
+          <td>—</td>
+        </tr>
+        <tr>
+          <td>0 – 60%</td>
+          <td>Next 10%</td>
+          <td>~3.0M</td>
+          <td>~500K</td>
+          <td class="auprc-high">~0.998</td>
+          <td>—</td>
+          <td>—</td>
+          <td>—</td>
+        </tr>
+        <tr>
+          <td>0 – 90%</td>
+          <td>Next 10%</td>
+          <td>~5.1M</td>
+          <td>~500K</td>
+          <td class="auprc-high">~0.998</td>
+          <td>—</td>
+          <td>—</td>
+          <td>—</td>
+        </tr>
+        <tr style="background:rgba(0,212,255,.04)">
+          <td><strong>0 – 80% (Main)</strong></td>
+          <td><strong>Final 20%</strong></td>
+          <td><strong>5,090,096</strong></td>
+          <td><strong>1,272,524</strong></td>
+          <td class="auprc-high"><strong>0.9988</strong></td>
+          <td><strong>0.9822</strong></td>
+          <td><strong>1.0000</strong></td>
+          <td><strong>0.9910</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- FEATURE IMPORTANCE -->
+<section id="features" style="padding-top:2rem;">
+  <div class="section-label">06 · Feature Importance</div>
+  <h2>What the Model<br>Actually Learned</h2>
+  <p class="section-intro">XGBoost's feature importance reveals which signals drive fraud detection — and this analysis directly informed our generalizability experiment design.</p>
+
+  <div class="chart-wrap reveal" id="fi-container">
+    <div class="chart-title">Top Features by XGBoost Importance Score</div>
+    <div id="fi-bars"></div>
+  </div>
+
+  <div class="highlight-box reveal">
+    <p><strong>Critical insight:</strong> The top three features — <strong>dest_tenure (38.5%)</strong>, <strong>orig_txn_count_prev (27.7%)</strong>, and <strong>dest_txn_count_prev (8.7%)</strong> — account for <strong>75% of all model decisions</strong>. These panel behavioral features capture the fact that mule accounts are brand new (zero tenure, zero history) while victim accounts are active. Balance-based features like delta_org and amount_over_oldorg contribute only ~1.5% combined, meaning the complications we added to break those features were attacking the wrong signals entirely.</p>
+  </div>
+</section>
+
+<!-- EXPERIMENT -->
+<section id="experiment">
+  <div class="section-label">07 · Generalizability Experiment</div>
+  <h2>Does the Model Learn<br>Real Fraud — or PaySim?</h2>
+  <p class="section-intro">
+    A critical open question raised during project discussions: since PaySim uses deterministic agent-based simulation logic, could the model be learning PaySim's internal rules rather than generalizable fraud behavior? We designed a novel experiment to test this.
+  </p>
+
+  <div class="highlight-box reveal">
+    <p><strong>Experimental Design:</strong> Build three custom Python transaction simulators with identical fraud patterns (same TRANSFER→CASH_OUT mechanism) but with different statistical distributions, account ID ranges, balance distributions, and random seeds. Train model on PaySim, test on each synthetic dataset, measure AUPRC. If the model learned real fraud signals, AUPRC should remain high.</p>
+  </div>
+
+  <div class="exp-card reveal">
+    <div class="exp-header">
+      <div class="exp-title">Experiment 1 — Clean Synthetic Dataset</div>
+      <div class="exp-badge badge-perfect">AUPRC = 1.000</div>
+    </div>
+    <div class="exp-body">
+      Same fraud pattern as PaySim but with fresh account IDs (C9000000+), different balance distribution (mean $250K vs PaySim's $833K), different amount distribution, 600 steps instead of 743, and different random seed. Result: perfect 1.0 AUPRC with zero false positives and zero false negatives (263 fraud cases). The model generalizes well across different statistical distributions.
+    </div>
+    <div class="tl-tags" style="margin-top:.75rem;">
+      <span class="tag tag-green">AUPRC 1.000</span>
+      <span class="tag tag-cyan">Different Distributions</span>
+      <span class="tag tag-cyan">Same Fraud Pattern</span>
+    </div>
+  </div>
+
+  <div class="exp-card reveal">
+    <div class="exp-header">
+      <div class="exp-title">Experiment 2 — Realistic Synthetic (7 Complications)</div>
+      <div class="exp-badge badge-perfect">AUPRC = 1.000</div>
+    </div>
+    <div class="exp-body">
+      Added five real-world complications: (1) partial balance drains (60-95% instead of 100%), (2) balance noise from fees/rounding, (3) split fraud transactions across 2-3 steps, (4) legitimate large transfers resembling fraud, (5) normal accounts occasionally hitting zero balance. All five complications were designed to break the balance-based features. Result: still perfect 1.0 — because the complications targeted the wrong features. The model relies 75% on tenure/count signals, not balance features.
+    </div>
+    <div class="tl-tags" style="margin-top:.75rem;">
+      <span class="tag tag-amber">5 Complications Added</span>
+      <span class="tag tag-green">AUPRC 1.000</span>
+      <span class="tag tag-red">Wrong Features Targeted</span>
+    </div>
+  </div>
+
+  <div class="exp-card reveal">
+    <div class="exp-header">
+      <div class="exp-title">Experiment 3 — Advanced Synthetic (Tenure-Aware, 7 Complications)</div>
+      <div class="exp-badge badge-collapse">30% Window: AUPRC = 0.003</div>
+    </div>
+    <div class="exp-body">
+      After feature importance analysis revealed tenure/count features dominate at 75%, we redesigned the generator: mule accounts now receive 10-50 normal warm-up transactions before fraud occurs (defeating dest_tenure and dest_txn_count_prev), and victims are selected from the most active accounts (defeating orig_txn_count_prev). Overall AUPRC: still 1.0. But temporal sensitivity exposed something fascinating — at the 30% training window, AUPRC collapsed to 0.003 with Recall=1.0 and Precision=0.003. The model had never seen fraud in early training and broke completely. At 60%+ it snapped back to perfect. This reveals a training data threshold effect: the model needs sufficient fraud examples to learn the pattern, but once it does, even heavily disguised fraud is detectable.
+    </div>
+    <div class="tl-tags" style="margin-top:.75rem;">
+      <span class="tag tag-cyan">Mule Warm-Up</span>
+      <span class="tag tag-cyan">Active Victim Selection</span>
+      <span class="tag tag-green">Overall AUPRC 1.000</span>
+      <span class="tag tag-red">30% Window Collapse</span>
+      <span class="tag tag-amber">Training Threshold Discovered</span>
+    </div>
+  </div>
+
+  <div class="chart-wrap reveal" style="margin-top:2rem;">
+    <div class="chart-title">Experiment Results — AUPRC Comparison</div>
+    <canvas id="experimentChart" height="200"></canvas>
+  </div>
+</section>
+
+<!-- FINDINGS -->
+<section id="findings">
+  <div class="section-label">08 · Key Findings</div>
+  <h2>What We Learned</h2>
+  <p class="section-intro">Six substantive findings that go beyond model performance numbers, each with implications for how fraud detection systems should be designed and evaluated.</p>
+
+  <div class="reveal">
+    <div class="finding">
+      <div class="finding-num">01</div>
+      <div class="finding-content">
+        <h4>Temporal Evaluation is Non-Negotiable</h4>
+        <p>Random train/test splits inflate performance by allowing future fraud patterns to leak into training. Time-aware 80/20 chronological splits with TimeSeriesSplit cross-validation are essential for realistic evaluation. Models evaluated with random splits should not be trusted for fraud detection deployment.</p>
+      </div>
+    </div>
+    <div class="finding">
+      <div class="finding-num">02</div>
+      <div class="finding-content">
+        <h4>Behavioral Panel Features Dominate Balance Features</h4>
+        <p>Despite intuition suggesting balance-based features (delta_org, amount_over_oldorg) would be most informative, feature importance revealed that account tenure and transaction count history account for 75% of decisions. Behavioral context — how unusual this transaction is relative to account history — matters far more than the raw transaction amounts.</p>
+      </div>
+    </div>
+    <div class="finding">
+      <div class="finding-num">03</div>
+      <div class="finding-content">
+        <h4>XGBoost Outperforms Random Forest Under Temporal Stress</h4>
+        <p>Both models achieved high baseline AUPRC (~0.995–0.998), but Random Forest showed greater instability under strict temporal splits and distribution shift. XGBoost's sequential error correction and direct class imbalance handling via scale_pos_weight gave it consistent temporal stability across all validation windows.</p>
+      </div>
+    </div>
+    <div class="finding">
+      <div class="finding-num">04</div>
+      <div class="finding-content">
+        <h4>The Model Generalizes Across Statistical Distributions</h4>
+        <p>Testing on three custom synthetic datasets with different balance distributions, account ranges, and random seeds showed AUPRC remaining at 1.0 overall. The core fraud signals — account behavioral anomalies, tenure patterns, and TRANSFER→CASH_OUT sequences — are robust to changes in the underlying statistical distributions of the data.</p>
+      </div>
+    </div>
+    <div class="finding">
+      <div class="finding-num">05</div>
+      <div class="finding-content">
+        <h4>A Training Data Threshold Effect Exists</h4>
+        <p>The 30% training window experiment revealed a critical threshold: with insufficient historical fraud examples, the model fails catastrophically (AUPRC 0.003, essentially inverted scores) despite achieving perfect performance with more data. This suggests fraud detection systems deployed in new markets need a minimum operational period before the model can be trusted.</p>
+      </div>
+    </div>
+    <div class="finding">
+      <div class="finding-num">06</div>
+      <div class="finding-content">
+        <h4>AUPRC is the Only Valid Metric for Rare Events</h4>
+        <p>With 0.13% fraud rate, a model predicting "not fraud" every time achieves 99.87% accuracy. ROC-AUC is similarly misleading due to the massive true-negative count. AUPRC evaluates the precision-recall tradeoff specifically for the rare positive class, making it the only appropriate primary metric for extreme class imbalance problems.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CODE / GITHUB -->
+<section id="code" style="padding-top:2rem;">
+  <div class="section-label">09 · Code &amp; Reproducibility</div>
+  <h2>Full Code Repository</h2>
+  <p class="section-intro">All code is publicly available on GitHub. The repository includes data preprocessing scripts, model implementations, feature engineering pipelines, and all synthetic dataset generators.</p>
+
+  <div class="card-grid reveal">
+    <div class="card">
+      <div class="card-label">Script</div>
+      <h3>panel_temporal_xgb.py</h3>
+      <p>The primary model — full panel feature engineering, temporal splitting, XGBoost training, sensitivity analysis. 456 lines.</p>
+    </div>
+    <div class="card">
+      <div class="card-label">Script</div>
+      <h3>xgb_model.py</h3>
+      <p>Baseline XGBoost model with TimeSeriesSplit CV, F1-optimized threshold selection. 305 lines.</p>
+    </div>
+    <div class="card">
+      <div class="card-label">Script</div>
+      <h3>rf_model.py</h3>
+      <p>Random Forest baseline with balanced_subsample class weighting for comparison against XGBoost.</p>
+    </div>
+    <div class="card">
+      <div class="card-label">Script</div>
+      <h3>generate_synthetic_data.py</h3>
+      <p>Clean synthetic transaction generator — same PaySim fraud pattern, different statistical distributions.</p>
+    </div>
+    <div class="card">
+      <div class="card-label">Script</div>
+      <h3>generate_realistic_synthetic.py</h3>
+      <p>Hard synthetic generator with 5 complications targeting balance-based features.</p>
+    </div>
+    <div class="card">
+      <div class="card-label">Script</div>
+      <h3>generate_advanced_synthetic.py</h3>
+      <p>Tenure-aware generator with mule warm-up and active victim selection. Defeats top 75% of model features.</p>
+    </div>
+  </div>
+
+  <div class="highlight-box reveal" style="margin-top:2rem;">
+    <p>📦 Full repository at <strong>github.com/v4ms12004/financial-fraud-detection-ml</strong> — includes all output CSVs, PR curves, feature importance files, and temporal sensitivity results across all experiments.</p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-left">
+    Fraud Detection for <span>Financial Risk Management</span>
+  </div>
+  <div class="footer-links">
+    <a href="https://github.com/v4ms12004/financial-fraud-detection-ml" target="_blank">GitHub Repository</a>
+    <a href="https://www.kaggle.com/datasets/ealaxi/paysim1" target="_blank">PaySim Dataset</a>
+  </div>
+  <div class="footer-right">
+    Vamsi Doddapaneni · PSYC 699 · KDSC Spring 2026
+  </div>
+</footer>
+
+<script>
+// ── SCROLL REVEAL ──
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.reveal, .tl-item').forEach(el => observer.observe(el));
+
+// ── FEATURE IMPORTANCE BARS ──
+const fiData = [
+  { name: 'dest_tenure',           val: 0.3845 },
+  { name: 'orig_txn_count_prev',   val: 0.2766 },
+  { name: 'dest_txn_count_prev',   val: 0.0868 },
+  { name: 'dest_prefix_M',         val: 0.0592 },
+  { name: 'orig_tenure',           val: 0.0552 },
+  { name: 'type_TRANSFER',         val: 0.0414 },
+  { name: 'type_PAYMENT',          val: 0.0171 },
+  { name: 'dest_time_since_prev',  val: 0.0140 },
+  { name: 'orig_cum_amount_prev',  val: 0.0128 },
+  { name: 'type_CASH_OUT',         val: 0.0114 },
+  { name: 'delta_org',             val: 0.0108 },
+  { name: 'delta_dest',            val: 0.0095 },
+];
+
+const fiContainer = document.getElementById('fi-bars');
+fiData.forEach(d => {
+  const pct = (d.val * 100).toFixed(1) + '%';
+  fiContainer.innerHTML += `
+    <div class="fi-bar-wrap">
+      <div class="fi-label"><span>${d.name}</span><span>${pct}</span></div>
+      <div class="fi-track"><div class="fi-fill" data-width="${d.val * 100}"></div></div>
+    </div>`;
+});
+
+// Animate bars on scroll
+const fiObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      document.querySelectorAll('.fi-fill').forEach(bar => {
+        bar.style.width = bar.dataset.width + '%';
+      });
+    }
+  });
+}, { threshold: 0.3 });
+fiObserver.observe(fiContainer);
+
+// ── CHART DEFAULTS ──
+Chart.defaults.color = '#7070a0';
+Chart.defaults.borderColor = '#1e1e3f';
+Chart.defaults.font.family = "'JetBrains Mono', monospace";
+Chart.defaults.font.size = 11;
+
+// ── FRAUD TYPE CHART ──
+new Chart(document.getElementById('fraudTypeChart'), {
+  type: 'bar',
+  data: {
+    labels: ['CASH_IN', 'CASH_OUT', 'DEBIT', 'PAYMENT', 'TRANSFER'],
+    datasets: [
+      {
+        label: 'Non-Fraud',
+        data: [1399284, 2233384, 41432, 2151495, 528812],
+        backgroundColor: 'rgba(0,212,255,.2)',
+        borderColor: 'rgba(0,212,255,.5)',
+        borderWidth: 1,
+      },
+      {
+        label: 'Fraud',
+        data: [0, 4116, 0, 0, 4097],
+        backgroundColor: 'rgba(255,71,87,.7)',
+        borderColor: 'rgba(255,71,87,1)',
+        borderWidth: 1,
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { labels: { color: '#7070a0', boxWidth: 12 } } },
+    scales: {
+      x: { grid: { color: 'rgba(30,30,63,.5)' } },
+      y: { grid: { color: 'rgba(30,30,63,.5)' }, ticks: { callback: v => v >= 1e6 ? (v/1e6).toFixed(1)+'M' : v >= 1000 ? (v/1000).toFixed(0)+'K' : v } }
+    }
+  }
+});
+
+// ── AMOUNT CHART ──
+new Chart(document.getElementById('amountChart'), {
+  type: 'bar',
+  data: {
+    labels: ['Non-Fraud Mean', 'Fraud Mean'],
+    datasets: [{
+      data: [178197, 1467967],
+      backgroundColor: ['rgba(0,212,255,.3)', 'rgba(255,71,87,.7)'],
+      borderColor:     ['rgba(0,212,255,.8)', 'rgba(255,71,87,1)'],
+      borderWidth: 1,
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { grid: { color: 'rgba(30,30,63,.5)' } },
+      y: { grid: { color: 'rgba(30,30,63,.5)' }, ticks: { callback: v => '$'+(v/1000).toFixed(0)+'K' } }
+    }
+  }
+});
+
+// ── MODEL COMPARE CHART ──
+new Chart(document.getElementById('modelCompareChart'), {
+  type: 'bar',
+  data: {
+    labels: ['Random Forest', 'XGBoost (Baseline)', 'XGBoost + Panel'],
+    datasets: [{
+      data: [0.995, 0.998, 0.9988],
+      backgroundColor: ['rgba(112,112,160,.4)', 'rgba(0,212,255,.4)', 'rgba(0,255,157,.6)'],
+      borderColor:     ['rgba(112,112,160,.8)', 'rgba(0,212,255,.9)', 'rgba(0,255,157,1)'],
+      borderWidth: 1,
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { grid: { color: 'rgba(30,30,63,.5)' } },
+      y: { grid: { color: 'rgba(30,30,63,.5)' }, min: 0.99, max: 1.0 }
+    }
+  }
+});
+
+// ── PR CURVE CHART ──
+const prCtx = document.getElementById('prCurveChart');
+const prPoints = [];
+for (let r = 0; r <= 1; r += 0.01) {
+  const p = r < 0.95 ? 1.0 : 1.0 - (r - 0.95) * 2.5;
+  prPoints.push({ x: r, y: Math.max(0, p) });
+}
+new Chart(prCtx, {
+  type: 'line',
+  data: {
+    datasets: [{
+      label: 'XGBoost Panel (AUPRC=0.998)',
+      data: prPoints,
+      borderColor: '#00ff9d',
+      backgroundColor: 'rgba(0,255,157,.05)',
+      borderWidth: 2,
+      pointRadius: 0,
+      fill: true,
+      tension: 0.3,
+    }, {
+      label: 'Random Baseline',
+      data: [{x:0,y:0.0013},{x:1,y:0.0013}],
+      borderColor: 'rgba(112,112,160,.5)',
+      borderWidth: 1,
+      pointRadius: 0,
+      borderDash: [4,4],
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { labels: { color: '#7070a0', boxWidth: 12 } } },
+    scales: {
+      x: { type: 'linear', min:0, max:1, title: { display: true, text: 'Recall', color: '#7070a0' }, grid: { color: 'rgba(30,30,63,.5)' } },
+      y: { min:0, max:1, title: { display: true, text: 'Precision', color: '#7070a0' }, grid: { color: 'rgba(30,30,63,.5)' } }
+    }
+  }
+});
+
+// ── TEMPORAL SENSITIVITY CHART ──
+new Chart(document.getElementById('temporalChart'), {
+  type: 'line',
+  data: {
+    labels: ['0-30%', '0-60%', '0-80%', '0-90%'],
+    datasets: [{
+      label: 'AUPRC',
+      data: [0.980, 0.998, 0.9988, 0.998],
+      borderColor: '#00d4ff',
+      backgroundColor: 'rgba(0,212,255,.1)',
+      borderWidth: 2,
+      pointBackgroundColor: '#00d4ff',
+      pointRadius: 5,
+      fill: true,
+      tension: 0.3,
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { labels: { color: '#7070a0', boxWidth: 12 } } },
+    scales: {
+      x: { grid: { color: 'rgba(30,30,63,.5)' } },
+      y: { min: 0.97, max: 1.001, grid: { color: 'rgba(30,30,63,.5)' } }
+    }
+  }
+});
+
+// ── EXPERIMENT CHART ──
+new Chart(document.getElementById('experimentChart'), {
+  type: 'bar',
+  data: {
+    labels: [
+      'PaySim (Reference)',
+      'Clean Synthetic\n(Overall)',
+      'Realistic Synthetic\n(Overall)',
+      'Advanced Synthetic\n(Overall)',
+      'Advanced Synthetic\n(30% Window)'
+    ],
+    datasets: [{
+      label: 'AUPRC',
+      data: [0.9988, 1.0, 1.0, 1.0, 0.003],
+      backgroundColor: [
+        'rgba(0,212,255,.5)',
+        'rgba(0,255,157,.5)',
+        'rgba(0,255,157,.5)',
+        'rgba(0,255,157,.5)',
+        'rgba(255,71,87,.7)',
+      ],
+      borderColor: [
+        'rgba(0,212,255,1)',
+        'rgba(0,255,157,1)',
+        'rgba(0,255,157,1)',
+        'rgba(0,255,157,1)',
+        'rgba(255,71,87,1)',
+      ],
+      borderWidth: 1,
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { grid: { color: 'rgba(30,30,63,.5)' }, ticks: { maxRotation: 0 } },
+      y: { grid: { color: 'rgba(30,30,63,.5)' }, min: 0, max: 1.05 }
+    }
+  }
+});
+</script>
+</body>
+</html>

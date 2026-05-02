@@ -1,0 +1,4 @@
+model,auprc
+Random Forest,1.0
+XGBoost (baseline),0.9954222143747697
+XGBoost + Panel,0.9958195499551725

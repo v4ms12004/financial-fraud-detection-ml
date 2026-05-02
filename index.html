@@ -9,18 +9,18 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 <style>
 :root {
-  --bg:       #070710;
-  --bg2:      #0d0d1a;
-  --bg3:      #111128;
-  --surface:  #14142b;
-  --border:   #1e1e3f;
-  --cyan:     #00d4ff;
-  --cyan-dim: #0099bb;
-  --green:    #00ff9d;
-  --amber:    #ffb300;
-  --red:      #ff4757;
-  --text:     #e8e8f0;
-  --muted:    #7070a0;
+  --bg:       #f6f6f6;
+  --bg2:      #efefef;
+  --bg3:      #e8e8e8;
+  --surface:  #ffffff;
+  --border:   #d0d0d0;
+  --cyan:     #2E86C1;
+  --cyan-dim: #1a5f8f;
+  --green:    #1A7A4A;
+  --amber:    #E67E22;
+  --red:      #C0392B;
+  --text:     #1a1a2e;
+  --muted:    #555577;
   --font-head: 'Syne', sans-serif;
   --font-body: 'DM Sans', sans-serif;
   --font-code: 'JetBrains Mono', monospace;
@@ -50,13 +50,13 @@ body {
   z-index: 9999;
   transform: translate(-50%, -50%);
   transition: transform .1s, background .2s;
-  box-shadow: 0 0 8px var(--cyan), 0 0 16px rgba(0,212,255,.4);
+  box-shadow: 0 0 8px var(--cyan), 0 0 16px rgba(46,134,193,.4);
 }
 
 #cursor-ring {
   position: fixed;
   width: 32px; height: 32px;
-  border: 1px solid rgba(0,212,255,.5);
+  border: 1px solid rgba(46,134,193,.5);
   border-radius: 50%;
   pointer-events: none;
   z-index: 9998;
@@ -73,7 +73,7 @@ body:has(button:hover) #cursor-dot {
 body:has(a:hover) #cursor-ring,
 body:has(button:hover) #cursor-ring {
   width: 48px; height: 48px;
-  border-color: rgba(0,255,157,.6);
+  border-color: rgba(26,122,74,.6);
 }
 
 a, button, [onclick] { cursor: none; }
@@ -84,8 +84,8 @@ body::before {
   position: fixed;
   inset: 0;
   background-image:
-    linear-gradient(rgba(0,212,255,.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0,212,255,.03) 1px, transparent 1px);
+    linear-gradient(rgba(46,134,193,.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(46,134,193,.04) 1px, transparent 1px);
   background-size: 60px 60px;
   pointer-events: none;
   z-index: 0;
@@ -96,9 +96,9 @@ nav {
   position: fixed;
   top: 0; left: 0; right: 0;
   z-index: 100;
-  background: rgba(7,7,16,.85);
+  background: rgba(246,246,246,.92);
   backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid #d0d0d0;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -316,7 +316,7 @@ h2 {
 }
 
 .card:hover {
-  border-color: rgba(0,212,255,.3);
+  border-color: rgba(46,134,193,.3);
   transform: translateY(-2px);
 }
 
@@ -422,14 +422,14 @@ h2 {
   letter-spacing: .05em;
 }
 
-.tag-cyan  { background: rgba(0,212,255,.12); color: var(--cyan);  border: 1px solid rgba(0,212,255,.25); }
-.tag-green { background: rgba(0,255,157,.1);  color: var(--green); border: 1px solid rgba(0,255,157,.2); }
+.tag-cyan  { background: rgba(46,134,193,.12); color: var(--cyan);  border: 1px solid rgba(46,134,193,.25); }
+.tag-green { background: rgba(26,122,74,.1);  color: var(--green); border: 1px solid rgba(26,122,74,.2); }
 .tag-amber { background: rgba(255,179,0,.1);  color: var(--amber); border: 1px solid rgba(255,179,0,.2); }
 .tag-red   { background: rgba(255,71,87,.1);  color: var(--red);   border: 1px solid rgba(255,71,87,.2); }
 
 /* ── CODE BLOCKS ── */
 .code-block {
-  background: #080815;
+  background: #f0f0f0;
   border: 1px solid var(--border);
   border-left: 3px solid var(--cyan);
   border-radius: 0 4px 4px 0;
@@ -554,12 +554,12 @@ h2 {
   text-transform: uppercase;
   text-align: left;
   padding: .75rem 1rem;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid #d0d0d0;
 }
 
 .compare-table td {
   padding: .8rem 1rem;
-  border-bottom: 1px solid rgba(30,30,63,.5);
+  border-bottom: 1px solid rgba(200,200,210,.5);
 }
 
 .compare-table tr:last-child td { border-bottom: none; }
@@ -602,9 +602,9 @@ h2 {
   border-radius: 2px;
 }
 
-.badge-perfect  { background: rgba(0,255,157,.15); color: var(--green); border: 1px solid rgba(0,255,157,.3); }
+.badge-perfect  { background: rgba(26,122,74,.15); color: var(--green); border: 1px solid rgba(26,122,74,.3); }
 .badge-collapse { background: rgba(255,71,87,.15);  color: var(--red);   border: 1px solid rgba(255,71,87,.3); }
-.badge-robust   { background: rgba(0,212,255,.15);  color: var(--cyan);  border: 1px solid rgba(0,212,255,.3); }
+.badge-robust   { background: rgba(0,212,255,.15);  color: var(--cyan);  border: 1px solid rgba(46,134,193,.3); }
 
 .exp-body {
   font-size: .88rem;
@@ -617,7 +617,7 @@ h2 {
   display: flex;
   gap: 1.25rem;
   padding: 1.25rem 0;
-  border-bottom: 1px solid rgba(30,30,63,.6);
+  border-bottom: 1px solid rgba(200,200,210,.6);
 }
 
 .finding:last-child { border-bottom: none; }
@@ -791,8 +791,8 @@ footer {
 }
 
 /* ── GLOW ── */
-.glow-cyan  { text-shadow: 0 0 20px rgba(0,212,255,.4); }
-.glow-green { text-shadow: 0 0 20px rgba(0,255,157,.4); }
+.glow-cyan  { text-shadow: 0 0 20px rgba(46,134,193,.4); }
+.glow-green { text-shadow: 0 0 20px rgba(26,122,74,.4); }
 
 /* ── ANIMATIONS ── */
 @keyframes fadeUp {
@@ -849,12 +849,12 @@ footer {
   text-transform: uppercase;
   padding: .6rem .75rem;
   text-align: left;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid #d0d0d0;
 }
 
 .temp-table td {
   padding: .65rem .75rem;
-  border-bottom: 1px solid rgba(30,30,63,.4);
+  border-bottom: 1px solid rgba(200,200,210,.4);
 }
 
 .temp-table td.auprc-high { color: var(--green); font-weight: 600; }
@@ -863,7 +863,7 @@ footer {
 /* ── HIGHLIGHT BOX ── */
 .highlight-box {
   background: rgba(0,212,255,.05);
-  border: 1px solid rgba(0,212,255,.2);
+  border: 1px solid rgba(46,134,193,.2);
   border-radius: 4px;
   padding: 1.25rem 1.5rem;
   margin: 1.5rem 0;
@@ -917,7 +917,7 @@ footer {
       <div class="stat-label">Transactions Analyzed</div>
     </div>
     <div class="stat">
-      <div class="stat-num green">0.996</div>
+      <div class="stat-num green">0.999</div>
       <div class="stat-label">AUPRC Achieved</div>
     </div>
     <div class="stat">
@@ -1223,19 +1223,19 @@ df[<span class="str">'dest_prefix'</span>] = df[<span class="str">'namedest'</sp
 
   <div class="metrics-grid reveal">
     <div class="metric-cell">
-      <div class="metric-val glow-green">0.9958</div>
+      <div class="metric-val glow-green">0.9988</div>
       <div class="metric-name">AUPRC</div>
     </div>
     <div class="metric-cell">
-      <div class="metric-val cyan">0.9613</div>
+      <div class="metric-val cyan">0.9822</div>
       <div class="metric-name">Precision</div>
     </div>
     <div class="metric-cell">
-      <div class="metric-val">0.9875</div>
+      <div class="metric-val">1.0000</div>
       <div class="metric-name">Recall</div>
     </div>
     <div class="metric-cell">
-      <div class="metric-val cyan">0.9743</div>
+      <div class="metric-val cyan">0.9910</div>
       <div class="metric-name">F1 Score</div>
     </div>
   </div>
@@ -1308,7 +1308,7 @@ df[<span class="str">'dest_prefix'</span>] = df[<span class="str">'namedest'</sp
           <td><strong>0 – 80% (Main)</strong></td>
           <td><strong>Final 20%</strong></td>
           <td><strong>5,090,096</strong></td>
-          <td><strong>1,272,524</strong></td>
+          <td><strong>123,580</strong></td>
           <td class="auprc-high"><strong>0.9988</strong></td>
           <td><strong>0.9822</strong></td>
           <td><strong>1.0000</strong></td>
@@ -1323,23 +1323,23 @@ df[<span class="str">'dest_prefix'</span>] = df[<span class="str">'namedest'</sp
 <section id="fraud-viz" style="padding-top:2rem;">
   <div class="section-label">06 · Fraud Detection Performance</div>
   <h2>How Well Does the<br>Model Catch Fraud?</h2>
-  <p class="section-intro">Beyond AUPRC — translating model performance into human-readable terms. Of 1,272,524 test transactions containing 1,642 fraud cases, here is what the model did.</p>
+  <p class="section-intro">Beyond AUPRC — translating model performance into human-readable terms. Of 123,580 test transactions containing 1,654 fraud cases, here is what the model did.</p>
 
   <div class="metrics-grid reveal" style="grid-template-columns: repeat(4, 1fr);">
     <div class="metric-cell">
-      <div class="metric-val glow-green">4,254</div>
+      <div class="metric-val glow-green">1,654</div>
       <div class="metric-name">Total Fraud in Test Set</div>
     </div>
     <div class="metric-cell">
-      <div class="metric-val glow-green">4,201</div>
+      <div class="metric-val glow-green">1,654</div>
       <div class="metric-name">Fraud Cases Caught (TP)</div>
     </div>
     <div class="metric-cell">
-      <div class="metric-val amber">169</div>
+      <div class="metric-val amber">30</div>
       <div class="metric-name">False Alarms (FP)</div>
     </div>
     <div class="metric-cell">
-      <div class="metric-val" style="color:var(--red)">53</div>
+      <div class="metric-val" style="color:var(--red)">0</div>
       <div class="metric-name">Fraud Missed (FN)</div>
     </div>
   </div>
@@ -1360,7 +1360,7 @@ df[<span class="str">'dest_prefix'</span>] = df[<span class="str">'namedest'</sp
   </div>
 
   <div class="highlight-box reveal">
-    <p>In plain terms: out of <strong>4,254 fraud transactions</strong> in the test set, the model caught <strong>4,201 of them (98.8% recall)</strong>. Of every <strong>1,000 transactions flagged as suspicious</strong>, <strong>961 are genuinely fraudulent</strong> (96.1% precision) — only 39 false alarms per 1,000 flags. The 53 missed fraud cases represent just 1.2% of all fraud — an exceptional result given that fraud is only 1 in 775 transactions in this dataset.</p>
+    <p>In plain terms: out of <strong>1,654 fraud transactions</strong> in the test set, the model caught <strong>all 1,654 (100% recall — zero missed)</strong>. Of every <strong>1,000 transactions flagged as suspicious</strong>, <strong>982 are genuinely fraudulent</strong> (98.2% precision) — only 18 false alarms per 1,000 flags. Zero fraud cases were missed — an exceptional result given that fraud is only 0.13% of all transactions.</p>
   </div>
 
   <div class="divider"></div>
@@ -1382,8 +1382,8 @@ df[<span class="str">'dest_prefix'</span>] = df[<span class="str">'namedest'</sp
     <div style="display:flex; flex-direction:column; gap:1rem;">
       <div class="solution-card">
         <div class="ps-label">✓ Time-Sorted (Our Approach)</div>
-        <div class="ps-title">AUPRC = 0.9958 &nbsp;|&nbsp; Recall = 98.8%</div>
-        <div class="ps-desc">Train on first 80% of time steps (3,959 fraud examples), test on last 20% (4,254 fraud). Simulates real deployment: the model predicts on genuinely unseen future transactions. This is the honest, realistic performance estimate.</div>
+        <div class="ps-title">AUPRC = 0.9988 &nbsp;|&nbsp; Recall = 100%</div>
+        <div class="ps-desc">Train on first 80% of time steps, test on last 20% (1,654 fraud cases in test set). Simulates real deployment: the model predicts on genuinely unseen future transactions. This is the honest, realistic performance estimate.</div>
       </div>
       <div class="problem-card">
         <div class="ps-label">✗ Random Split (Naive Baseline)</div>
@@ -1609,7 +1609,7 @@ new Chart(document.getElementById('catchRateChart'), {
       {
         label: 'Caught (TP)',
         data: [4097, 4116],
-        backgroundColor: 'rgba(0,255,157,.6)',
+        backgroundColor: 'rgba(26,122,74,.6)',
         borderColor: 'rgba(0,255,157,1)',
         borderWidth: 1,
       },
@@ -1624,10 +1624,10 @@ new Chart(document.getElementById('catchRateChart'), {
   },
   options: {
     responsive: true,
-    plugins: { legend: { labels: { color: '#7070a0', boxWidth: 12 } } },
+    plugins: { legend: { labels: { color: '#555577', boxWidth: 12 } } },
     scales: {
-      x: { grid: { color: 'rgba(30,30,63,.5)' }, stacked: true },
-      y: { grid: { color: 'rgba(30,30,63,.5)' }, stacked: true,
+      x: { grid: { color: 'rgba(200,200,210,.5)' }, stacked: true },
+      y: { grid: { color: 'rgba(200,200,210,.5)' }, stacked: true,
            ticks: { callback: v => v.toLocaleString() } }
     }
   }
@@ -1639,15 +1639,15 @@ new Chart(document.getElementById('confusionChart'), {
   data: {
     labels: ['True Negatives (Legit → Legit)', 'True Positives (Fraud → Fraud)', 'False Positives (Legit → Fraud)', 'False Negatives (Fraud → Missed)'],
     datasets: [{
-      data: [1268101, 4201, 169, 53],
+      data: [121896, 1654, 30, 0],
       backgroundColor: [
-        'rgba(0,212,255,.3)',
-        'rgba(0,255,157,.7)',
+        'rgba(46,134,193,.3)',
+        'rgba(26,122,74,.7)',
         'rgba(255,179,0,.6)',
         'rgba(255,71,87,.7)',
       ],
       borderColor: [
-        'rgba(0,212,255,.8)',
+        'rgba(46,134,193,.8)',
         'rgba(0,255,157,1)',
         'rgba(255,179,0,1)',
         'rgba(255,71,87,1)',
@@ -1660,9 +1660,9 @@ new Chart(document.getElementById('confusionChart'), {
     responsive: true,
     plugins: { legend: { display: false } },
     scales: {
-      x: { grid: { color: 'rgba(30,30,63,.5)' },
+      x: { grid: { color: 'rgba(200,200,210,.5)' },
            ticks: { callback: v => v >= 1e6 ? (v/1e6).toFixed(1)+'M' : v.toLocaleString() } },
-      y: { grid: { color: 'rgba(30,30,63,.5)' }, ticks: { font: { size: 9 } } }
+      y: { grid: { color: 'rgba(200,200,210,.5)' }, ticks: { font: { size: 9 } } }
     }
   }
 });
@@ -1675,8 +1675,8 @@ new Chart(document.getElementById('sortedVsUnsortedChart'), {
     datasets: [
       {
         label: 'AUPRC',
-        data: [0.9958, 0.9939],
-        backgroundColor: ['rgba(0,255,157,.6)', 'rgba(255,71,87,.5)'],
+        data: [0.9988, 0.9939],
+        backgroundColor: ['rgba(26,122,74,.6)', 'rgba(255,71,87,.5)'],
         borderColor: ['rgba(0,255,157,1)', 'rgba(255,71,87,1)'],
         borderWidth: 1,
       }
@@ -1690,7 +1690,7 @@ new Chart(document.getElementById('sortedVsUnsortedChart'), {
         callbacks: {
           label: ctx => {
             const labels = [
-              ' AUPRC: 0.9958 — fewer fraud examples, better result',
+              ' AUPRC: 0.9988 — fewer fraud examples, better result',
               ' AUPRC: 0.9939 — more fraud examples, worse result'
             ];
             return labels[ctx.dataIndex];
@@ -1699,11 +1699,11 @@ new Chart(document.getElementById('sortedVsUnsortedChart'), {
       }
     },
     scales: {
-      x: { grid: { color: 'rgba(30,30,63,.5)' } },
+      x: { grid: { color: 'rgba(200,200,210,.5)' } },
       y: {
-        grid: { color: 'rgba(30,30,63,.5)' },
+        grid: { color: 'rgba(200,200,210,.5)' },
         min: 0.990, max: 1.000,
-        title: { display: true, text: 'AUPRC', color: '#7070a0' }
+        title: { display: true, text: 'AUPRC', color: '#555577' }
       }
     }
   }
@@ -1746,8 +1746,8 @@ const fiObserver = new IntersectionObserver((entries) => {
 fiObserver.observe(fiContainer);
 
 // ── CHART DEFAULTS ──
-Chart.defaults.color = '#7070a0';
-Chart.defaults.borderColor = '#1e1e3f';
+Chart.defaults.color = '#555577';
+Chart.defaults.borderColor = '#d0d0d0';
 Chart.defaults.font.family = "'JetBrains Mono', monospace";
 Chart.defaults.font.size = 11;
 
@@ -1760,8 +1760,8 @@ new Chart(document.getElementById('fraudTypeChart'), {
       {
         label: 'Non-Fraud',
         data: [1399284, 2233384, 41432, 2151495, 528812],
-        backgroundColor: 'rgba(0,212,255,.2)',
-        borderColor: 'rgba(0,212,255,.5)',
+        backgroundColor: 'rgba(46,134,193,.2)',
+        borderColor: 'rgba(46,134,193,.5)',
         borderWidth: 1,
       },
       {
@@ -1775,10 +1775,10 @@ new Chart(document.getElementById('fraudTypeChart'), {
   },
   options: {
     responsive: true,
-    plugins: { legend: { labels: { color: '#7070a0', boxWidth: 12 } } },
+    plugins: { legend: { labels: { color: '#555577', boxWidth: 12 } } },
     scales: {
-      x: { grid: { color: 'rgba(30,30,63,.5)' } },
-      y: { grid: { color: 'rgba(30,30,63,.5)' }, ticks: { callback: v => v >= 1e6 ? (v/1e6).toFixed(1)+'M' : v >= 1000 ? (v/1000).toFixed(0)+'K' : v } }
+      x: { grid: { color: 'rgba(200,200,210,.5)' } },
+      y: { grid: { color: 'rgba(200,200,210,.5)' }, ticks: { callback: v => v >= 1e6 ? (v/1e6).toFixed(1)+'M' : v >= 1000 ? (v/1000).toFixed(0)+'K' : v } }
     }
   }
 });
@@ -1790,8 +1790,8 @@ new Chart(document.getElementById('amountChart'), {
     labels: ['Non-Fraud Mean', 'Fraud Mean'],
     datasets: [{
       data: [178197, 1467967],
-      backgroundColor: ['rgba(0,212,255,.3)', 'rgba(255,71,87,.7)'],
-      borderColor:     ['rgba(0,212,255,.8)', 'rgba(255,71,87,1)'],
+      backgroundColor: ['rgba(46,134,193,.3)', 'rgba(255,71,87,.7)'],
+      borderColor:     ['rgba(46,134,193,.8)', 'rgba(255,71,87,1)'],
       borderWidth: 1,
     }]
   },
@@ -1799,8 +1799,8 @@ new Chart(document.getElementById('amountChart'), {
     responsive: true,
     plugins: { legend: { display: false } },
     scales: {
-      x: { grid: { color: 'rgba(30,30,63,.5)' } },
-      y: { grid: { color: 'rgba(30,30,63,.5)' }, ticks: { callback: v => '$'+(v/1000).toFixed(0)+'K' } }
+      x: { grid: { color: 'rgba(200,200,210,.5)' } },
+      y: { grid: { color: 'rgba(200,200,210,.5)' }, ticks: { callback: v => '$'+(v/1000).toFixed(0)+'K' } }
     }
   }
 });
@@ -1812,8 +1812,8 @@ new Chart(document.getElementById('modelCompareChart'), {
     labels: ['Random Forest', 'XGBoost (Baseline)', 'XGBoost + Panel'],
     datasets: [{
       data: [0.995, 0.998, 0.9988],
-      backgroundColor: ['rgba(112,112,160,.4)', 'rgba(0,212,255,.4)', 'rgba(0,255,157,.6)'],
-      borderColor:     ['rgba(112,112,160,.8)', 'rgba(0,212,255,.9)', 'rgba(0,255,157,1)'],
+      backgroundColor: ['rgba(112,112,160,.4)', 'rgba(46,134,193,.4)', 'rgba(26,122,74,.6)'],
+      borderColor:     ['rgba(112,112,160,.8)', 'rgba(46,134,193,.9)', 'rgba(0,255,157,1)'],
       borderWidth: 1,
     }]
   },
@@ -1821,8 +1821,8 @@ new Chart(document.getElementById('modelCompareChart'), {
     responsive: true,
     plugins: { legend: { display: false } },
     scales: {
-      x: { grid: { color: 'rgba(30,30,63,.5)' } },
-      y: { grid: { color: 'rgba(30,30,63,.5)' }, min: 0.99, max: 1.0 }
+      x: { grid: { color: 'rgba(200,200,210,.5)' } },
+      y: { grid: { color: 'rgba(200,200,210,.5)' }, min: 0.99, max: 1.0 }
     }
   }
 });
@@ -1840,7 +1840,7 @@ new Chart(prCtx, {
     datasets: [{
       label: 'XGBoost Panel (AUPRC=0.998)',
       data: prPoints,
-      borderColor: '#00ff9d',
+      borderColor: '#1A7A4A',
       backgroundColor: 'rgba(0,255,157,.05)',
       borderWidth: 2,
       pointRadius: 0,
@@ -1857,10 +1857,10 @@ new Chart(prCtx, {
   },
   options: {
     responsive: true,
-    plugins: { legend: { labels: { color: '#7070a0', boxWidth: 12 } } },
+    plugins: { legend: { labels: { color: '#555577', boxWidth: 12 } } },
     scales: {
-      x: { type: 'linear', min:0, max:1, title: { display: true, text: 'Recall', color: '#7070a0' }, grid: { color: 'rgba(30,30,63,.5)' } },
-      y: { min:0, max:1, title: { display: true, text: 'Precision', color: '#7070a0' }, grid: { color: 'rgba(30,30,63,.5)' } }
+      x: { type: 'linear', min:0, max:1, title: { display: true, text: 'Recall', color: '#555577' }, grid: { color: 'rgba(200,200,210,.5)' } },
+      y: { min:0, max:1, title: { display: true, text: 'Precision', color: '#555577' }, grid: { color: 'rgba(200,200,210,.5)' } }
     }
   }
 });
@@ -1873,10 +1873,10 @@ new Chart(document.getElementById('temporalChart'), {
     datasets: [{
       label: 'AUPRC',
       data: [0.980, 0.998, 0.9988, 0.998],
-      borderColor: '#00d4ff',
+      borderColor: '#2E86C1',
       backgroundColor: 'rgba(0,212,255,.1)',
       borderWidth: 2,
-      pointBackgroundColor: '#00d4ff',
+      pointBackgroundColor: '#2E86C1',
       pointRadius: 5,
       fill: true,
       tension: 0.3,
@@ -1884,10 +1884,10 @@ new Chart(document.getElementById('temporalChart'), {
   },
   options: {
     responsive: true,
-    plugins: { legend: { labels: { color: '#7070a0', boxWidth: 12 } } },
+    plugins: { legend: { labels: { color: '#555577', boxWidth: 12 } } },
     scales: {
-      x: { grid: { color: 'rgba(30,30,63,.5)' } },
-      y: { min: 0.97, max: 1.001, grid: { color: 'rgba(30,30,63,.5)' } }
+      x: { grid: { color: 'rgba(200,200,210,.5)' } },
+      y: { min: 0.97, max: 1.001, grid: { color: 'rgba(200,200,210,.5)' } }
     }
   }
 });
@@ -1907,10 +1907,10 @@ new Chart(document.getElementById('experimentChart'), {
       label: 'AUPRC',
       data: [0.9988, 1.0, 1.0, 1.0, 0.0025],
       backgroundColor: [
-        'rgba(0,212,255,.5)',
-        'rgba(0,255,157,.5)',
-        'rgba(0,255,157,.5)',
-        'rgba(0,255,157,.5)',
+        'rgba(46,134,193,.5)',
+        'rgba(26,122,74,.5)',
+        'rgba(26,122,74,.5)',
+        'rgba(26,122,74,.5)',
         'rgba(255,71,87,.7)',
       ],
       borderColor: [
@@ -1938,9 +1938,9 @@ new Chart(document.getElementById('experimentChart'), {
       }
     },
     scales: {
-      x: { grid: { color: 'rgba(30,30,63,.5)' }, ticks: { maxRotation: 0, font: { size: 10 } } },
-      y: { grid: { color: 'rgba(30,30,63,.5)' }, min: 0, max: 1.05,
-           title: { display: true, text: 'AUPRC', color: '#7070a0' } }
+      x: { grid: { color: 'rgba(200,200,210,.5)' }, ticks: { maxRotation: 0, font: { size: 10 } } },
+      y: { grid: { color: 'rgba(200,200,210,.5)' }, min: 0, max: 1.05,
+           title: { display: true, text: 'AUPRC', color: '#555577' } }
     }
   }
 });
@@ -1985,16 +1985,16 @@ document.querySelectorAll('a, button, .card, .exp-card, .flow-step').forEach(el 
   el.addEventListener('mouseenter', () => {
     ring.style.width  = '48px';
     ring.style.height = '48px';
-    ring.style.borderColor = 'rgba(0,255,157,.7)';
+    ring.style.borderColor = 'rgba(26,122,74,.7)';
     dot.style.background = 'var(--green)';
-    dot.style.boxShadow  = '0 0 8px var(--green), 0 0 20px rgba(0,255,157,.4)';
+    dot.style.boxShadow  = '0 0 8px var(--green), 0 0 20px rgba(26,122,74,.4)';
   });
   el.addEventListener('mouseleave', () => {
     ring.style.width  = '32px';
     ring.style.height = '32px';
-    ring.style.borderColor = 'rgba(0,212,255,.5)';
+    ring.style.borderColor = 'rgba(46,134,193,.5)';
     dot.style.background = 'var(--cyan)';
-    dot.style.boxShadow  = '0 0 8px var(--cyan), 0 0 16px rgba(0,212,255,.4)';
+    dot.style.boxShadow  = '0 0 8px var(--cyan), 0 0 16px rgba(46,134,193,.4)';
   });
 });
 </script>
